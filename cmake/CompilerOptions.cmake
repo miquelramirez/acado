@@ -55,7 +55,7 @@ SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
 # When building, don't use the install RPATH already
 # (but later on when installing)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
@@ -78,7 +78,7 @@ ENDIF("${isSystemDir}" STREQUAL "-1")
 IF (    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
      OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"
      OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" )
-	
+
 	# Cygwin complains in about the -fPIC flag...
 	IF( CYGWIN )
 		ADD_DEFINITIONS( -D__NO_PIPES__ )
@@ -88,10 +88,10 @@ IF (    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
 		SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC" )
 		SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC" )
 	ENDIF( )
-	
+
 	SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wfloat-equal -Wshadow -DLINUX" )
 	SET( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wfloat-equal -Wshadow -DLINUX" )
-	
+
 	IF( NOT ACADO_DEVELOPER )
 		SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overloaded-virtual" )
 	ENDIF()
@@ -100,7 +100,7 @@ IF (    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
 		SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
 		SET(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
 	ENDIF()
-	
+
 	IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-comparison -Dregister=''" )
 	ENDIF()
@@ -110,26 +110,28 @@ IF (    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
 	#
 	IF( APPLE )
 		# Build only for 64-bit arch. This requires (at least) OS X version >= 10.7.
-		IF ( NOT CMAKE_OSX_ARCHITECTURES ) 
+		IF ( NOT CMAKE_OSX_ARCHITECTURES )
 			SET( CMAKE_OSX_ARCHITECTURES "x86_64;" )
 		ENDIF()
-		
+
 		IF ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
 			SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++" )
 		ENDIF()
 
 	ENDIF( APPLE )
-	
+
 	#
 	# Check for C++11/C++0x support
 	# NOTE: This is only done in the case when we don't use OSX with Clang
 	#       (version >= 4.0) since there are namespace problems (std::tr1 is removed).
 	#
+		CHECK_CXX_COMPILER_FLAG(-std=c++14 COMPILER_SUPPORTS_CXX14 )
 		CHECK_CXX_COMPILER_FLAG(-std=c++11 COMPILER_SUPPORTS_CXX11 )
 		CHECK_CXX_COMPILER_FLAG(-std=gnu++11 COMPILER_SUPPORTS_GNU11)
 		CHECK_CXX_COMPILER_FLAG(-std=c++0x COMPILER_SUPPORTS_CXX0X)
 		CHECK_CXX_COMPILER_FLAG(-std=gnu++0x COMPILER_SUPPORTS_GNU0X)
-
+		IF( COMPILER_SUPPORTS_CXX14 )
+			SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -DACADO_HAS_CXX14 -DACADO_HAS_CX11")
 		IF( COMPILER_SUPPORTS_CXX11 )
 			SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DACADO_HAS_CXX11" )
 		ELSEIF( COMPILER_SUPPORTS_GNU11 )
@@ -139,7 +141,7 @@ IF (    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
 		ELSEIF( COMPILER_SUPPORTS_GNU0X)
 			SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x -DACADO_HAS_CXX0X" )
 		ENDIF()
-	
+
 	IF ( MINGW )
         SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
@@ -154,7 +156,7 @@ IF (    "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
 ################################################################################
 ELSEIF( MSVC )
 	SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nologo -EHsc " )
-	
+
 	#
 	# Check for Gnuplot installation
 	#
@@ -201,4 +203,3 @@ ELSEIF( MSVC )
 	SET_PROPERTY( GLOBAL PROPERTY USE_FOLDERS ON )
 
 ENDIF( )
-
