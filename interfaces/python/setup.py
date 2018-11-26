@@ -10,10 +10,10 @@ import sys
 import platform
 
 here = path.abspath(path.dirname(__file__))
-base = path.abspath(path.join(here, '..'))
-src_dir = path.abspath(path.join(here, '..', 'src'))
-vendordir = path.abspath(path.join(here, '..', 'vendor'))
-builddir = path.abspath(path.join(here, '..', '.build'))
+base = here
+src_dir = path.abspath(path.join(here, 'src'))
+vendordir = path.abspath(path.join(here, 'vendor'))
+builddir = path.abspath(path.join(here, '.build'))
 
 
 # Avoid meaningless gcc warning - see https://stackoverflow.com/a/49041815
