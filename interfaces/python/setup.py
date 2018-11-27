@@ -36,16 +36,21 @@ def main():
         'tarski'
     ]
 
+    libboost_name = 'boost_python3{}'.format(platform.python_version().split('.')[1])
+
+
     module = Extension(
         'acado._acado',
 
         language="c++",
 
         sources=glob.glob('src/extension/*.cxx'),
+        depends=glob.glob('src/extension/*.*xx'),
 
         include_dirs=[
             src_dir,
             '/usr/local/include',
+            '/usr/local/include/acado', # needs to be generated as this may change
         ],
 
         library_dirs=[builddir],
@@ -56,7 +61,7 @@ def main():
 
         extra_compile_args=['-std=c++14'],
 
-        libraries=['acado_toolkit_s']
+        libraries=[libboost_name, 'acado_toolkit_s']
     )
 
     setup(
