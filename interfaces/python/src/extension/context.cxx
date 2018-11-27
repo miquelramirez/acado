@@ -58,6 +58,15 @@ namespace ACADO {
         return z_ref;
     }
 
+    TermRef
+    PyContext::new_parameter(std::string name) {
+        auto z = std::make_shared<Parameter>(name, 1, 1);
+        TermRef z_ref = register_expr(z);
+        _parameters[z_ref] = z;
+        _num_vars++;
+        return z_ref;
+    }
+
     DifferentialVarPtr
     PyContext::get_d_var(TermRef i) {
         auto it = _diff_vars.find(i);
@@ -79,6 +88,14 @@ namespace ACADO {
         auto it = _algebraic_vars.find(i);
         if (it == _algebraic_vars.end())
             throw std::logic_error("Term is not an algebraic state variable!");
+        return it->second;
+    }
+
+    ParameterPtr
+    PyContext::get_parameter(TermRef i) {
+        auto it = _parameters.find(i);
+        if (it == _parameters.end())
+            throw std::logic_error("Term is not an a parameter!");
         return it->second;
     }
 
@@ -246,6 +263,7 @@ void define_context() {
         .def("new_differential_state", &PyContext::new_differential_state)
         .def("new_control_input", &PyContext::new_control_input)
         .def("new_algebraic_state", &PyContext::new_algebraic_state)
+        .def("new_parameter", &PyContext::new_parameter)
         .def("constant", &PyContext::constant)
         .def("str", &PyContext::str)
         .add_property("num_vars", &PyContext::num_vars)

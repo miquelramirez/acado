@@ -21,6 +21,7 @@ namespace  ACADO {
         std::map< TermRef, DifferentialVarPtr >     _diff_vars;
         std::map< TermRef, ControlVarPtr >          _control_vars;
         std::map< TermRef, AlgebraicVarPtr >        _algebraic_vars;
+        std::map< TermRef, ParameterPtr >           _parameters;
         std::map< TermRef, ExpressionPtr >          _expressions;
         std::vector< ExpressionPtr >                _terms;
         std::string                                 _name;
@@ -39,6 +40,7 @@ namespace  ACADO {
         TermRef     new_differential_state(std::string name);
         TermRef     new_control_input(std::string name);
         TermRef     new_algebraic_state(std::string name);
+        TermRef     new_parameter(std::string name);
 
         TermRef     constant(double v);
 
@@ -59,25 +61,26 @@ namespace  ACADO {
         TermRef     ln(TermRef arg);
         TermRef     log(TermRef arg);
 
-
         std::string str(TermRef i);
 
+        ExpressionPtr   get(TermRef ref);
     protected:
 
         TermRef         register_expr(ExpressionPtr p_expr);
-        ExpressionPtr   get(TermRef ref);
+
 
 
     public:
         // accessors
-        std::string name() const { return _name; }
-        unsigned    num_vars() const { return _num_vars; }
-        unsigned    num_expressions() const { return _num_expressions; }
-        unsigned    num_terms() const { return _terms.size(); }
+        std::string         name() const { return _name; }
+        unsigned            num_vars() const { return _num_vars; }
+        unsigned            num_expressions() const { return _num_expressions; }
+        unsigned            num_terms() const { return _terms.size(); }
 
         DifferentialVarPtr  get_d_var(TermRef i);
         ControlVarPtr       get_c_var(TermRef i);
         AlgebraicVarPtr     get_a_var(TermRef i);
+        ParameterPtr        get_parameter(TermRef i);
 
     };
 }

@@ -62,3 +62,32 @@ def test_add():
 
     assert ctx.num_terms == 5
     assert ctx.str(expr1) == "[ (xd[6]+xd[5])]"
+
+def test_mul():
+
+    ctx = ac.Context("Rocket")
+
+    v = ctx.new_differential_state("v")
+    s = ctx.new_differential_state("s")
+    m = ctx.new_differential_state("m")
+    u = ctx.new_control_input("u")
+
+    ode = ctx.mul( ctx.constant(0.2), ctx.mul(v, v))
+
+    assert ctx.num_terms == 7
+    assert ctx.str(ode) == '[ ((real_t)(0.2)*(xd[8]*xd[8]))]'
+
+def test_rocket_equations():
+
+    ctx = ac.Context("Rocket")
+
+    v = ctx.new_differential_state("v")
+    s = ctx.new_differential_state("s")
+    m = ctx.new_differential_state("m")
+    u = ctx.new_control_input("u")
+
+    dot_s = v
+    dot_v = ctx.div(ctx.sub(u, ctx.mul(ctx.constant(0.2), ctx.mul(v, v))), m)
+    dot_m = ctx.mul( ctx.constant(-0.01), ctx.mul(u, u))
+
+    assert ctx.num_terms == 12

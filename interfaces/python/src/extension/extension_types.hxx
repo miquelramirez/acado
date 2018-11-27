@@ -14,7 +14,7 @@ namespace  ACADO {
     typedef std::shared_ptr<Disturbance>        DisturbanceVarPtr;
     typedef std::shared_ptr<IntegerControl>     IntControlVarPtr;
     typedef std::shared_ptr<IntegerParameter>   IntParameterVarPtr;
-    typedef std::shared_ptr<Parameter>          ParameterVarPtr;
+    typedef std::shared_ptr<Parameter>          ParameterPtr;
     typedef std::shared_ptr<TIME>               TimeVarPtr;
     typedef std::shared_ptr<IntermediateState>  IntermVarPtr;
 
