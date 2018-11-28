@@ -19,9 +19,21 @@ namespace ACADO {
         return current;
     }
 
+    AtomRef
+    PyContext::register_atom(AtomPtr p_atom) {
+        AtomRef current = _atoms.size();
+        _atoms.push_back(p_atom);
+        return current;
+    }
+
     ExpressionPtr
     PyContext::get(TermRef i) {
         return _terms.at(i);
+    }
+
+    AtomPtr
+    PyContext::get_atom(AtomRef i) {
+        return _atoms.at(i);
     }
 
     TermRef
@@ -253,6 +265,43 @@ namespace ACADO {
         _expressions[e] = p_expr;
         return e;
     }
+
+    AtomRef
+    PyContext::equal( TermRef lhs, double rhs ) {
+        auto lhs_expr = get(lhs);
+        auto p_atom = std::make_shared<ConstraintComponent>(*lhs_expr == rhs);
+        AtomRef a = register_atom(p_atom);
+        return a;
+    }
+
+    AtomRef
+    PyContext::upper_bound( TermRef lhs, double rhs ) {
+        auto lhs_expr = get(lhs);
+        auto p_atom = std::make_shared<ConstraintComponent>(*lhs_expr <= rhs);
+        AtomRef a = register_atom(p_atom);
+        return a;
+    }
+
+    AtomRef
+    PyContext::lower_bound( double lhs, TermRef rhs ) {
+        auto rhs_expr = get(rhs);
+        auto p_atom = std::make_shared<ConstraintComponent>(lhs <= *rhs_expr);
+        AtomRef a = register_atom(p_atom);
+        return a;
+    }
+
+    AtomRef
+    PyContext::bound(double lb, TermRef arg, double ub) {
+        auto arg_expr = get(arg);
+        auto p_atom = std::make_shared<ConstraintComponent>();
+        DVector lbv(arg_expr->getDim());
+        lbv << lb;
+        DVector ubv(arg_expr->getDim());
+        ubv << ub;
+        p_atom->initialize(lbv, *arg_expr, ubv);
+        AtomRef a = register_atom(p_atom);
+        return a;
+    }
 }
 
 void define_context() {
@@ -269,6 +318,7 @@ void define_context() {
         .add_property("num_vars", &PyContext::num_vars)
         .add_property("num_expressions", &PyContext::num_expressions)
         .add_property("num_terms", &PyContext::num_terms)
+        .add_property("num_atoms", &PyContext::num_atoms)
         .add_property("name", &PyContext::name)
         .def("add", &PyContext::add)
         .def("sub", &PyContext::sub)
@@ -285,5 +335,9 @@ void define_context() {
         .def("sqrt", &PyContext::sqrt)
         .def("ln", &PyContext::ln)
         .def("log", &PyContext::log)
+        .def("equal", &PyContext::equal)
+        .def("upper_bound", &PyContext::upper_bound)
+        .def("lower_bound", &PyContext::lower_bound)
+        .def("bound", &PyContext::bound)
         ;
 }

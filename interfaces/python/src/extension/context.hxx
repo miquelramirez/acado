@@ -24,6 +24,7 @@ namespace  ACADO {
         std::map< TermRef, ParameterPtr >           _parameters;
         std::map< TermRef, ExpressionPtr >          _expressions;
         std::vector< ExpressionPtr >                _terms;
+        std::vector< AtomPtr >                      _atoms;
         std::string                                 _name;
         unsigned                                    _num_vars;
         unsigned                                    _num_expressions;
@@ -61,12 +62,20 @@ namespace  ACADO {
         TermRef     ln(TermRef arg);
         TermRef     log(TermRef arg);
 
+        AtomRef     equal(TermRef lhs, double rhs);
+        AtomRef     upper_bound(TermRef lhs, double rhs);
+        AtomRef     lower_bound(double lhs, TermRef rhs);
+        AtomRef     bound(double lb, TermRef expr, double ub);
+
         std::string str(TermRef i);
 
         ExpressionPtr   get(TermRef ref);
+        AtomPtr         get_atom(AtomRef ref);
+
     protected:
 
         TermRef         register_expr(ExpressionPtr p_expr);
+        AtomRef         register_atom(AtomPtr p_atom);
 
 
 
@@ -76,6 +85,7 @@ namespace  ACADO {
         unsigned            num_vars() const { return _num_vars; }
         unsigned            num_expressions() const { return _num_expressions; }
         unsigned            num_terms() const { return _terms.size(); }
+        unsigned            num_atoms() const { return _atoms.size(); }
 
         DifferentialVarPtr  get_d_var(TermRef i);
         ControlVarPtr       get_c_var(TermRef i);
