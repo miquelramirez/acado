@@ -2,8 +2,8 @@
 
 namespace ACADO {
 
-    PyOCP::PyOCP( PyContext::ptr ctx, double t0, TermRef tmax )
-        : OCP(t0, *(ctx->get_parameter(tmax))), _ctx(ctx) {
+    PyOCP::PyOCP( PyContext::ptr ctx, double t0, TermRef tmax, int N )
+        : OCP(t0, *(ctx->get_parameter(tmax)), N), _ctx(ctx) {
 
     }
 
@@ -43,7 +43,7 @@ void define_ocp() {
 
     bp::class_<PyOCP, PyOCP::ptr,
         boost::noncopyable>("OCP",
-            bp::init<PyContext::ptr, double, TermRef>())
+            bp::init<PyContext::ptr, double, TermRef, int>())
             .def("add_continuous_diff_constraints", &PyOCP::add_continuous_diff_constraints)
             .def("add_initial_constraint", &PyOCP::add_initial_constraint)
             .def("add_terminal_constraint", &PyOCP::add_terminal_constraint)

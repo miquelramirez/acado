@@ -11,7 +11,7 @@ def test_ocp_rocket_setup():
     for x, de in odes:
         de_sys.set_ode(x, de)
 
-    ocp = ac.OCP(ctx, 0.0, T)
+    ocp = ac.OCP(ctx, 0.0, T, 20)
 
     ocp.set_terminal_cost(T)
 
@@ -38,7 +38,7 @@ def test_ocp_rocket_solve():
     for x, de in odes:
         de_sys.set_ode(x, de)
 
-    ocp = ac.OCP(ctx, 0.0, T)
+    ocp = ac.OCP(ctx, 0.0, T, 20)
 
     ocp.set_terminal_cost(T)
 
