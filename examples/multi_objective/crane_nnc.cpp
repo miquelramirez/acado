@@ -46,7 +46,7 @@ int main( ){
     DifferentialState     x  , dx  ;   // the position of the mounting point and its velocity
     DifferentialState     L  , dL  ;   // the length of the cable and its velocity
     DifferentialState     phi, dphi;   // the angle phi and its velocity
-    DifferentialState     P0,P1,P2 ;   // the variance-covariance states
+    DifferentialState     P0,P1,P2 ;   // the variance-covariance states
     Control               ddx, ddL ;   // the accelarations
     Parameter                    T ;   // duration of the maneuver
     Parameter                gamma ;   // the confidence level
