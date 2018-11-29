@@ -86,6 +86,8 @@ void define_optimization_algorithm() {
         .add_property("P", &PyOptimizationAlgorithm::P)
         .add_property("W", &PyOptimizationAlgorithm::W)
         .add_property("t", &PyOptimizationAlgorithm::times)
+        .add_property("t0", &PyOptimizationAlgorithm::getStartTime)
+        .add_property("tf", &PyOptimizationAlgorithm::getEndTime)
         .add_property("max_num_iterations",
                         &PyOptimizationAlgorithm::max_num_iterations,
                         &PyOptimizationAlgorithm::set_max_num_iterations)
