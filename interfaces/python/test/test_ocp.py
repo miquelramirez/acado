@@ -64,4 +64,4 @@ def test_ocp_rocket_solve():
     solver.solve()
 
     assert de_sys.num_dynamic_equations == 3
-    assert solver.objective_value == 1.0
+    assert solver.objective_value == 7.4417405995042
