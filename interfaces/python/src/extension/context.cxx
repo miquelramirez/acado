@@ -8,7 +8,21 @@ namespace ACADO {
 
     PyContext::PyContext(std::string name)
         : _name(name),
-        _num_vars(0), _num_expressions(0) {}
+        _num_vars(0), _num_expressions(0) {
+
+        // Reset all static counters
+        AlgebraicState::clearStaticCounters();
+        Control::clearStaticCounters();
+        DifferentialStateDerivative::clearStaticCounters();
+        DifferentialState::clearStaticCounters();
+        Disturbance::clearStaticCounters();
+        IntegerControl::clearStaticCounters();
+        OnlineData::clearStaticCounters();
+        Output::clearStaticCounters();
+        Parameter::clearStaticCounters();
+        TIME::clearStaticCounters();
+        IntermediateState::clearStaticCounters();
+    }
 
     PyContext::~PyContext() {}
 
@@ -295,9 +309,9 @@ namespace ACADO {
         auto arg_expr = get(arg);
         auto p_atom = std::make_shared<ConstraintComponent>();
         DVector lbv(arg_expr->getDim());
-        lbv << lb;
+        lbv.setAll(lb);
         DVector ubv(arg_expr->getDim());
-        ubv << ub;
+        ubv.setAll(ub);
         p_atom->initialize(lbv, *arg_expr, ubv);
         AtomRef a = register_atom(p_atom);
         return a;
