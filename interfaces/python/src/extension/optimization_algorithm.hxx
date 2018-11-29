@@ -17,6 +17,14 @@ namespace ACADO {
         VariablesGrid   _params; // _parameters
         VariablesGrid   _u; // _controls
         VariablesGrid   _w; // perturbation values
+        Grid            _time_grid;
+
+        bp::list        _py_xd;
+        bp::list        _py_xa;
+        bp::list        _py_params;
+        bp::list        _py_u;
+        bp::list        _py_w;
+        bp::list        _py_t;
 
         // types
     public:
@@ -35,5 +43,12 @@ namespace ACADO {
     public:
         int     max_num_iterations() const;
         void    set_max_num_iterations(int v) { set(MAX_NUM_ITERATIONS, v); }
+
+        bp::list    Xd() { return _py_xd; }
+        bp::list    Xa() { return _py_xa; }
+        bp::list    U() { return _py_u; }
+        bp::list    P() { return _py_params; }
+        bp::list    W() { return _py_w; }
+        bp::list    times() { return _py_t; }
     };
 }
