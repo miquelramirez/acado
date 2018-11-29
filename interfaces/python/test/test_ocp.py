@@ -52,7 +52,7 @@ def test_ocp_rocket_solve():
     ocp.add_terminal_constraint(ctx.equal(X[0], 10.0))
     ocp.add_terminal_constraint(ctx.equal(X[1], 0.0))
 
-    ocp.add_constraint(ctx.bound(-0.1, X[0], 1.7))
+    ocp.add_constraint(ctx.bound(-0.1, X[1], 1.7))
     ocp.add_constraint(ctx.bound(-1.1, U[0], 1.1))
     ocp.add_constraint(ctx.bound(5.0, T, 15.0))
 
