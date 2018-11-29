@@ -16,6 +16,7 @@ namespace ACADO {
         VariablesGrid   _xa; // algebraic states
         VariablesGrid   _params; // _parameters
         VariablesGrid   _u; // _controls
+        VariablesGrid   _w; // perturbation values
 
         // types
     public:

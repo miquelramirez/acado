@@ -22,10 +22,16 @@ namespace ACADO {
     PyOptimizationAlgorithm::_solve() {
         auto r = solve();
 
-        getDifferentialStates(_xd);
-        getAlgebraicStates(_xa);
-        getParameters(_params);
-        getControls(_u);
+        if (getNX() > 0)
+            getDifferentialStates(_xd);
+        if (getNXA() > 0)
+            getAlgebraicStates(_xa);
+        if (getNP() > 0)
+            getParameters(_params);
+        if (getNU() > 0)
+            getControls(_u);
+        if (getNW() > 0)
+            getDisturbances(_w);
 
         return bp::object(r == SUCCESSFUL_RETURN);
     }
