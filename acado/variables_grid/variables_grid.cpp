@@ -283,12 +283,18 @@ returnValue VariablesGrid::setVector(	uint pointIdx,
 	if ( pointIdx >= getNumPoints( ) )
 		return ACADOERROR( RET_INDEX_OUT_OF_BOUNDS );
 
-	if ( _values.getDim( ) != getNumRows( pointIdx ) )
+	if ( _values.getDim( ) != getNumRows( pointIdx ) ) {
+		std::stringstream buffer;
+		buffer << "VariablesGrid::setVector() - Vector dimension mismatch" << std::endl;
+		buffer << "vector dimension " << _values.getDim() << std::endl;
+		buffer << " dimension at point " << getNumRows(pointIdx);
+		throw std::logic_error(buffer.str());
 		return ACADOERROR( RET_VECTOR_DIMENSION_MISMATCH );
-	
+	}
+
 	for( uint j=0; j<getNumRows( ); ++j )
 		operator()( pointIdx,j ) = _values( j );
-	
+
 	return SUCCESSFUL_RETURN;
 }
 
@@ -344,12 +350,12 @@ VariablesGrid& VariablesGrid::shiftBackwards( DVector lastValue )
 {
 
     if( lastValue.isEmpty() == BT_FALSE ){
-    
+
         DMatrix aux( lastValue.getDim(), 1 );
         aux.setCol( 0, lastValue );
-    
+
      	MatrixVariablesGrid::shiftBackwards( aux );
-	    return *this;    
+	    return *this;
     }
 
 
@@ -476,9 +482,9 @@ returnValue VariablesGrid::merge(	const VariablesGrid& arg,
 		if ( keepOverlap == BT_FALSE )
 			overlapping = arg.isInInterval( getTime(i) );
 
-		// add all grid points of argument grid that are smaller 
+		// add all grid points of argument grid that are smaller
 		// then current one of original grid
-		while ( ( j < arg.getNumPoints( ) ) && 
+		while ( ( j < arg.getNumPoints( ) ) &&
 				( acadoIsStrictlySmaller( arg.getTime( j ),getTime( i ) ) == BT_TRUE ) )
 		{
 			if ( ( overlapping == BT_FALSE ) ||
@@ -498,11 +504,11 @@ returnValue VariablesGrid::merge(	const VariablesGrid& arg,
 				case MM_KEEP:
 					mergedGrid.addMatrix( *(values[i]),getTime( i ) );
 					break;
-	
+
 				case MM_REPLACE:
 					mergedGrid.addMatrix( *(arg.values[j]),arg.getTime( j ) );
 					break;
-	
+
 				case MM_DUPLICATE:
 					mergedGrid.addMatrix( *(values[i]),getTime( i ) );
 					mergedGrid.addMatrix( *(arg.values[j]),arg.getTime( j ) );
@@ -569,20 +575,20 @@ VariablesGrid VariablesGrid::getTimeSubGrid(	double startTime,
 
 	if ( ( isInInterval( startTime ) == BT_FALSE ) || ( isInInterval( endTime ) == BT_FALSE ) )
 		return newVariablesGrid;
-	
+
 	if ( ( startIdx >= getNumPoints( ) ) || ( endIdx >= getNumPoints( ) ) )
 		return newVariablesGrid;
 
 // 	if ( startIdx > endIdx )
 // 		return newVariablesGrid;
-	
+
 	// add all matrices in interval (constant interpolation)
 	if ( ( hasTime( startTime ) == BT_FALSE ) && ( startIdx > 0 ) )
 		newVariablesGrid.addMatrix( *(values[ startIdx-1 ]),startTime );
-	
+
 	for( uint i=startIdx; i<=endIdx; ++i )
 		newVariablesGrid.addMatrix( *(values[i]),getTime( i ) );
-	
+
 	if ( hasTime( endTime ) == BT_FALSE )
 		newVariablesGrid.addMatrix( *(values[ endIdx ]),endTime );
 
@@ -614,7 +620,7 @@ returnValue VariablesGrid::getSum(	DVector& sum
 									) const
 {
 	sum.setZero();
-	
+
 	for( uint i=0; i<getNumPoints( ); ++i )
 		sum += getVector( i );
 
@@ -627,7 +633,7 @@ returnValue VariablesGrid::getIntegral(	InterpolationMode mode,
 										) const
 {
 	value.setZero();
-	
+
 	switch( mode )
 	{
 		case IM_CONSTANT:
@@ -651,8 +657,8 @@ returnValue VariablesGrid::getIntegral(	InterpolationMode mode,
 				}
 			}
 			break;
-		
-		default: 
+
+		default:
 			return ACADOERROR( RET_NOT_YET_IMPLEMENTED );
 	}
 
