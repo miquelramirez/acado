@@ -30,6 +30,13 @@ namespace ACADO {
         return bp::object(r == SUCCESSFUL_RETURN);
     }
 
+    int
+    PyOptimizationAlgorithm::max_num_iterations() const {
+        int param_value;
+        return get(MAX_NUM_ITERATIONS, param_value);
+        return param_value;
+    }
+
 }
 
 void define_optimization_algorithm() {
@@ -42,5 +49,8 @@ void define_optimization_algorithm() {
         .def("init", &PyOptimizationAlgorithm::_init)
         .def("solve", &PyOptimizationAlgorithm::_solve)
         .add_property("objective_value", &PyOptimizationAlgorithm::get_objective)
+        .add_property("max_num_iterations",
+                        &PyOptimizationAlgorithm::max_num_iterations,
+                        &PyOptimizationAlgorithm::set_max_num_iterations)
         ;
 }

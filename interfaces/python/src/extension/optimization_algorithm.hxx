@@ -30,6 +30,9 @@ namespace ACADO {
         bp::object  _init();
         bp::object  _solve();
         double      get_objective() const { return getObjectiveValue(); }
-
+        // accessors
+    public:
+        int     max_num_iterations() const;
+        void    set_max_num_iterations(int v) { set(MAX_NUM_ITERATIONS, v); }
     };
 }
