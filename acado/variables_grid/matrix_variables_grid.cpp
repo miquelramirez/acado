@@ -36,6 +36,8 @@
 #include <acado/variables_grid/variables_grid.hpp>
 
 #include <iomanip>
+#include <sstream>
+#include <cassert>
 
 using namespace std;
 
@@ -146,7 +148,7 @@ MatrixVariablesGrid& MatrixVariablesGrid::operator=(	const MatrixVariablesGrid& 
 			values = (MatrixVariable**) calloc( nPoints,sizeof(MatrixVariable*) );
 		else
 			values = 0;
-	
+
 		for( uint i=0; i<nPoints; ++i )
 			values[i] = new MatrixVariable( *(rhs.values[i]) );
     }
@@ -163,7 +165,7 @@ MatrixVariablesGrid& MatrixVariablesGrid::operator=(	const DMatrix& rhs
 	for( uint i=0; i<nPoints; ++i )
 	{
 		setTime( rhs( i,0 ) );
-	
+
 		for( uint j=0; j<rhs.getNumCols( )-1; ++j )
 			operator()( i,j,0 ) = rhs( i,j+1 );
 	}
@@ -245,7 +247,7 @@ returnValue MatrixVariablesGrid::init(	uint _nRows,
 {
 	clearValues( );
 	Grid::init( _firstTime,_lastTime,_nPoints );
-	
+
 	if ( nPoints > 0 )
 		values = (MatrixVariable**) calloc( nPoints,sizeof(MatrixVariable*) );
 	else
@@ -434,9 +436,9 @@ returnValue MatrixVariablesGrid::merge(	const MatrixVariablesGrid& arg,
 		if ( keepOverlap == BT_FALSE )
 			overlapping = arg.isInInterval( getTime(i) );
 
-		// add all grid points of argument grid that are smaller 
+		// add all grid points of argument grid that are smaller
 		// then current one of original grid
-		while ( ( j < arg.getNumPoints( ) ) && 
+		while ( ( j < arg.getNumPoints( ) ) &&
 				( acadoIsStrictlySmaller( arg.getTime( j ),getTime( i ) ) == BT_TRUE ) )
 		{
 			if ( ( overlapping == BT_FALSE ) ||
@@ -456,11 +458,11 @@ returnValue MatrixVariablesGrid::merge(	const MatrixVariablesGrid& arg,
 				case MM_KEEP:
 					mergedGrid.addMatrix( *(values[i]),getTime( i ) );
 					break;
-	
+
 				case MM_REPLACE:
 					mergedGrid.addMatrix( *(arg.values[j]),arg.getTime( j ) );
 					break;
-	
+
 				case MM_DUPLICATE:
 					mergedGrid.addMatrix( *(values[i]),getTime( i ) );
 					mergedGrid.addMatrix( *(arg.values[j]),arg.getTime( j ) );
@@ -609,7 +611,7 @@ MatrixVariablesGrid MatrixVariablesGrid::getCoarsenedGrid(	const Grid& arg
 															) const
 {
 	MatrixVariablesGrid tmp;
-	
+
 	// nothing to do
 	if ( this->isEmpty( ) == BT_TRUE )
 		return tmp;
@@ -651,13 +653,13 @@ MatrixVariablesGrid& MatrixVariablesGrid::shiftBackwards( DMatrix lastValue )
 {
 	if ( getNumPoints() < 2 ){
         if( lastValue.isEmpty() == BT_FALSE )
-             *(values[getNumIntervals()]) = lastValue;	
-		return *this;	
+             *(values[getNumIntervals()]) = lastValue;
+		return *this;
     }
 
 	for( uint i=1; i<getNumPoints( ); ++i )
 		*(values[i-1]) = *(values[i]);
-		
+
     if( lastValue.isEmpty() == BT_FALSE )
         *(values[getNumIntervals()]) = lastValue;
 
@@ -941,7 +943,7 @@ returnValue MatrixVariablesGrid::initMatrixVariables(	uint _nRows,
 
 		values[i] = new MatrixVariable( _nRows,_nCols,_type,_names,_units,currentScaling,currentLb,currentUb );
 	}
-	
+
 	return SUCCESSFUL_RETURN;
 }
 
@@ -1381,8 +1383,15 @@ returnValue MatrixVariablesGrid::setLowerBound(	uint pointIdx,
 	if( pointIdx >= getNumPoints( ) )
 		return ACADOERROR( RET_INDEX_OUT_OF_BOUNDS );
 
-	if( valueIdx >= values[pointIdx]->getDim( ) )
+	if( valueIdx >= values[pointIdx]->getDim( ) ) {
+		std::stringstream buffer;
+		buffer << "MatrixVariablesGrid::setLowerBound()" << std::endl;
+		buffer << "Index out of bounds while trying to set lower bound of " << _lb << std::endl;
+		buffer << "Trying to access value at time point " << pointIdx << " var index: " << valueIdx << " ";
+		buffer << ", dimension of values: " << values[pointIdx]->getDim() << std::endl;
+		throw std::logic_error(buffer.str());
 		return ACADOERROR( RET_INDEX_OUT_OF_BOUNDS );
+	}
 
 	values[pointIdx]->setLowerBound( valueIdx,_lb );
     return SUCCESSFUL_RETURN;
@@ -1430,8 +1439,17 @@ returnValue MatrixVariablesGrid::setUpperBound(	uint pointIdx,
 	if( pointIdx >= getNumPoints( ) )
 		return ACADOERROR( RET_INDEX_OUT_OF_BOUNDS );
 
-	if( valueIdx >= values[pointIdx]->getDim( ) )
+	if( valueIdx >= values[pointIdx]->getDim( ) ) {
+		std::stringstream buffer;
+		buffer << "MatrixVariablesGrid::setUpperBound()" << std::endl;
+		buffer << "Index out of bounds while trying to set upper bound of " << _ub << std::endl;
+		buffer << "Trying to access value at time point " << pointIdx << " var index: " << valueIdx << " ";
+		buffer << ", dimension of values: " << values[pointIdx]->getDim() << std::endl;
+		throw std::logic_error(buffer.str());
+
+
 		return ACADOERROR( RET_INDEX_OUT_OF_BOUNDS );
+	}
 
     values[pointIdx]->setUpperBound( valueIdx,_ub );
     return SUCCESSFUL_RETURN;

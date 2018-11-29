@@ -34,7 +34,8 @@
 
 #include <acado/function/function.hpp>
 #include <acado/constraint/constraint.hpp>
-
+#include <stdexcept>
+#include <sstream>
 
 
 BEGIN_NAMESPACE_ACADO
@@ -226,7 +227,14 @@ returnValue Constraint::add( const DVector lb_, const Expression &arg, const DVe
 
     // CHECK FEASIBILITY:
     // ------------------
-    if( lb_.getDim() != ub_.getDim()        )  return ACADOERROR(RET_INFEASIBLE_CONSTRAINT);
+    if( lb_.getDim() != ub_.getDim()        )  {
+        std::stringstream buffer;
+        buffer << "Constraint::add(DVector, Expression, DVector):" << std::endl;
+        buffer << "dimension of lower and upper bounds vectors do not match" << std::endl;
+        buffer << "dimension of LB: " << lb_.getDim() << " dimension of UB: " << ub_.getDim() << std::endl;
+        throw std::logic_error(buffer.str());
+        return ACADOERROR(RET_INFEASIBLE_CONSTRAINT);
+    }
     if( lb_.getDim() != grid.getNumPoints() )  return ACADOERROR(RET_INFEASIBLE_CONSTRAINT);
     if( (lb_ <= (const DVector&)ub_) == BT_FALSE            )  return ACADOERROR(RET_INFEASIBLE_CONSTRAINT);
 
