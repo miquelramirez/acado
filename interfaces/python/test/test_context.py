@@ -41,11 +41,15 @@ def test_multiple_vars():
 
     ctx = ac.Context("rocket")
 
-    v = ctx.new_differential_state("x")
+    v = ctx.new_differential_state("v")
     s = ctx.new_differential_state("s")
     m = ctx.new_differential_state("m")
     u = ctx.new_control_input("u")
 
+    print(ctx.str(v))
+    print(ctx.str(s))
+    print(ctx.str(m))
+    print(ctx.str(u))
     assert ctx.num_vars == 4
     assert ctx.num_terms == 4
 
@@ -61,7 +65,7 @@ def test_add():
     expr1 = ctx.add(s, v)
 
     assert ctx.num_terms == 5
-    assert ctx.str(expr1) == "[ (xd[6]+xd[5])]"
+    assert ctx.str(expr1) == "[ (xd[1]+xd[0])]"
 
 def test_mul():
 
@@ -75,7 +79,7 @@ def test_mul():
     ode = ctx.mul( ctx.constant(0.2), ctx.mul(v, v))
 
     assert ctx.num_terms == 7
-    assert ctx.str(ode) == '[ ((real_t)(0.2)*(xd[8]*xd[8]))]'
+    assert ctx.str(ode) == '[ ((real_t)(0.2)*(xd[0]*xd[0]))]'
 
 def test_rocket_equations():
 
