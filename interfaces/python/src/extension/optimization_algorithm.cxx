@@ -66,6 +66,20 @@ namespace ACADO {
         return param_value;
     }
 
+    void
+    PyOptimizationAlgorithm::initialize_differential_states(PyVariablesGrid::ptr grid) {
+        initializeDifferentialStates(*grid);
+    }
+
+    void
+    PyOptimizationAlgorithm::initialize_controls(PyVariablesGrid::ptr grid) {
+        initializeControls(*grid);
+    }
+
+    void
+    PyOptimizationAlgorithm::initialize_parameters(PyVariablesGrid::ptr grid) {
+        initializeParameters(*grid);
+    }
 
 
 }
@@ -79,6 +93,9 @@ void define_optimization_algorithm() {
                                     bp::init<PyOCP::ptr>())
         .def("init", &PyOptimizationAlgorithm::_init)
         .def("solve", &PyOptimizationAlgorithm::_solve)
+        .def("initialize_differential_states", &PyOptimizationAlgorithm::initialize_differential_states)
+        .def("initialize_controls", &PyOptimizationAlgorithm::initialize_controls)
+        .def("initialize_parameters", &PyOptimizationAlgorithm::initialize_parameters)
         .add_property("objective_value", &PyOptimizationAlgorithm::get_objective)
         .add_property("Xd", &PyOptimizationAlgorithm::Xd)
         .add_property("Xa", &PyOptimizationAlgorithm::Xa)

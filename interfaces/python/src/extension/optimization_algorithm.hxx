@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "ocp.hxx"
+#include "grids.hxx"
 
 extern void define_optimization_algorithm();
 
@@ -39,6 +40,10 @@ namespace ACADO {
         bp::object  _init();
         bp::object  _solve();
         double      get_objective() const { return getObjectiveValue(); }
+
+        void    initialize_differential_states( PyVariablesGrid::ptr );
+        void    initialize_controls( PyVariablesGrid::ptr );
+        void    initialize_parameters( PyVariablesGrid::ptr );
         // accessors
     public:
         int     max_num_iterations() const;
