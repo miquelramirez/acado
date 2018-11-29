@@ -28,7 +28,10 @@ namespace ACADO {
 
     void
     PyOCP::add_constraint(AtomRef atom) {
-        subjectTo( *_ctx->get_atom(atom));
+        AtomPtr c_comp = _ctx->get_atom(atom);
+        //std::cout << "num grid points: " << grid->getNumPoints() << std::endl;
+        //std::cout << c_comp->getLB()[0] << " <= " <<  c_comp->getExpression() << "<=" << c_comp->getUB()[0] << std::endl;
+        subjectTo( c_comp->getLB()[0] <= c_comp->getExpression() <= c_comp->getUB()[0] );
     }
 
     void
