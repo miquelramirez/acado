@@ -1,5 +1,6 @@
 
 build*
+debug_build*
 
 Debug
 Release
