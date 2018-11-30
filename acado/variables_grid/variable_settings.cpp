@@ -67,7 +67,7 @@ VariableSettings::VariableSettings(	uint _dim,
 {
 	names = 0;
 	units = 0;
-	
+
 	init( _dim,_type,_names,_units,_scaling,_lb,_ub,_autoInit );
 }
 
@@ -99,7 +99,7 @@ VariableSettings::VariableSettings( const VariableSettings& rhs )
 		for( i=0; i<dim; ++i )
 		{
 			units[i] = new char[MAX_LENGTH_NAME+1];
-			setUnit( i,rhs.units[i] );
+			setUnitLabel( i,rhs.units[i] );
 		}
 	}
 	else
@@ -179,7 +179,7 @@ VariableSettings& VariableSettings::operator=( const VariableSettings& rhs )
 			for( i=0; i<dim; ++i )
 			{
 				units[i] = new char[MAX_LENGTH_NAME+1];
-				setUnit( i,rhs.units[i] );
+				setUnitLabel( i,rhs.units[i] );
 			}
 		}
 		else
@@ -330,7 +330,7 @@ returnValue VariableSettings::appendSettings(	uint _dim,
 			for( i=0; i<_dim; ++i )
 			{
 				units[dim+i] = new char[MAX_LENGTH_NAME+1];
-				setUnit( dim+i,_units[i] );
+				setUnitLabel( dim+i,_units[i] );
 			}
 		}
 		else
@@ -338,7 +338,7 @@ returnValue VariableSettings::appendSettings(	uint _dim,
 			for( i=0; i<_dim; ++i )
 			{
 				units[dim+i] = new char[MAX_LENGTH_NAME+1];
-				setUnit( dim+i,defaultUnit );
+				setUnitLabel( dim+i,defaultUnit );
 			}
 		}
 	}
@@ -351,13 +351,13 @@ returnValue VariableSettings::appendSettings(	uint _dim,
 			for( i=0; i<dim; ++i )
 			{
 				units[i] = new char[MAX_LENGTH_NAME+1];
-				setUnit( i,defaultUnit );
+				setUnitLabel( i,defaultUnit );
 			}
 
 			for( i=0; i<_dim; ++i )
 			{
 				units[dim+i] = new char[MAX_LENGTH_NAME+1];
-				setUnit( dim+i,_units[i] );
+				setUnitLabel( dim+i,_units[i] );
 			}
 		}
 	}
@@ -485,7 +485,7 @@ returnValue VariableSettings::setName(	uint idx,
 
 
 
-returnValue VariableSettings::getUnit(	uint idx,
+returnValue VariableSettings::getUnitLabel(	uint idx,
 												char* _unit
 												) const
 {
@@ -502,7 +502,7 @@ returnValue VariableSettings::getUnit(	uint idx,
 }
 
 
-returnValue VariableSettings::setUnit(	uint idx,
+returnValue VariableSettings::setUnitLabel(	uint idx,
 												const char* const _unit
 												)
 {

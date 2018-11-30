@@ -180,6 +180,17 @@ bool GenericMatrix< T >::isPositiveSemiDefinite( ) const
 	return false;
 }
 
+template<>
+bool GenericMatrix<int>::isPositiveSemiDefinite() const {
+	return false;
+}
+
+template<>
+bool GenericMatrix<bool>::isPositiveSemiDefinite() const {
+	return false;
+}
+
+
 template<typename T>
 bool GenericMatrix< T >::isPositiveDefinite( ) const
 {
@@ -188,6 +199,18 @@ bool GenericMatrix< T >::isPositiveDefinite( ) const
 
 	return false;
 }
+
+template<>
+bool GenericMatrix<int>::isPositiveDefinite() const {
+	return false;
+}
+
+template<>
+bool GenericMatrix<bool>::isPositiveDefinite() const {
+	return false;
+}
+
+
 
 template<typename T>
 GenericMatrix< T > GenericMatrix< T >::absolute() const

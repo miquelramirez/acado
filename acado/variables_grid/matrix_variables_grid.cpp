@@ -1277,7 +1277,7 @@ returnValue MatrixVariablesGrid::getUnit(	uint pointIdx,
 	if( pointIdx >= getNumPoints( ) )
 		return ACADOERROR( RET_INDEX_OUT_OF_BOUNDS );
 
-	return values[pointIdx]->getUnit( idx,_unit );
+	return values[pointIdx]->getUnitLabel( idx,_unit );
 }
 
 
@@ -1289,7 +1289,7 @@ returnValue MatrixVariablesGrid::setUnit(	uint pointIdx,
 	if( pointIdx >= getNumPoints( ) )
 		return ACADOERROR( RET_INDEX_OUT_OF_BOUNDS );
 
-	return values[pointIdx]->setUnit( idx,_unit );
+	return values[pointIdx]->setUnitLabel( idx,_unit );
 }
 
 

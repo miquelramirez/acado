@@ -166,7 +166,7 @@ returnValue ExportNLPSolver::setupInitialization()
 {
     string moduleName;
 	get(CG_MODULE_NAME, moduleName);
-    
+
 	////////////////////////////////////////////////////////////////////////////
 	//
 	// Setup the main initialization function.
@@ -198,7 +198,7 @@ returnValue ExportNLPSolver::setupSimulation( void )
 	// By default, here will be defined model simulation suitable for sparse QP solver.
 	// Condensing based QP solvers should redefine/extend model simulation
 	//
-    
+
     string moduleName;
 	get(CG_MODULE_NAME, moduleName);
 
@@ -893,8 +893,13 @@ returnValue ExportNLPSolver::setLSQObjective(const Objective& _objective)
 		EvaluationPoint epFx( Fx );
 
 		DVector vFx = Fx.evaluate( epFx );
-
-		objEvFx.setup("evFx", Eigen::Map<DMatrix>(vFx.data(), NY, NX), REAL, ACADO_WORKSPACE);
+		// MRJ: Changes in recent versions of Eigen seem to have changed the internal
+		// functionality of the Eigen::Map objects, so they cannot be used to initialise
+		// matrices directly. Here we are creating the temporary directly on the stack,
+		// under the assumption that the compiler will optimise this out.
+		DMatrix tmp(NY, NX, vFx.data());
+		//objEvFx.setup("evFx", Eigen::Map<DMatrix>(vFx.data(), NY, NX), REAL, ACADO_WORKSPACE);
+		objEvFx.setup("evFx", tmp, REAL, ACADO_WORKSPACE);
 	}
 	else
 	{
@@ -911,8 +916,10 @@ returnValue ExportNLPSolver::setLSQObjective(const Objective& _objective)
 		EvaluationPoint epFu( Fu );
 
 		DVector vFu = Fu.evaluate( epFu );
-
-		objEvFu.setup("evFu", Eigen::Map<DMatrix>(vFu.data(), NY, NU), REAL, ACADO_WORKSPACE);
+		// MRJ: See comment on line 896
+		DMatrix tmp(NY, NU, vFu.data());
+		//objEvFu.setup("evFu", Eigen::Map<DMatrix>(vFu.data(), NY, NU), REAL, ACADO_WORKSPACE);
+		objEvFu.setup("evFu", tmp, REAL, ACADO_WORKSPACE);
 	}
 	else
 	{
@@ -1076,8 +1083,10 @@ returnValue ExportNLPSolver::setLSQObjective(const Objective& _objective)
 		EvaluationPoint epFEndTermX( FEndTermX );
 
 		DVector vFx = FEndTermX.evaluate( epFEndTermX );
-
-		objEvFxEnd.setup("evFxEnd", Eigen::Map<DMatrix>(vFx.data(), NYN, NX), REAL, ACADO_WORKSPACE);
+		// MRJ: See comment on line 896
+		DMatrix tmp(NYN, NX, vFx.data());
+		//objEvFxEnd.setup("evFxEnd", Eigen::Map<DMatrix>(vFx.data(), NYN, NX), REAL, ACADO_WORKSPACE);
+		objEvFxEnd.setup("evFxEnd", tmp, REAL, ACADO_WORKSPACE);
 	}
 	else
 	{
@@ -1371,7 +1380,10 @@ returnValue ExportNLPSolver::setConstraints(const OCP& _ocp)
 
 			if (v.isZero() == false)
 			{
-				pacEvHx.setup("evHx", Eigen::Map<DMatrix>(v.data(), dimPacH, NX), REAL, ACADO_WORKSPACE);
+				// MRJ: See comment on line 896
+				DMatrix tmp2(dimPacH, NX, v.data());
+				//pacEvHx.setup("evHx", Eigen::Map<DMatrix>(v.data(), dimPacH, NX), REAL, ACADO_WORKSPACE);
+				pacEvHx.setup("evHx", tmp2, REAL, ACADO_WORKSPACE);
 			}
 		}
 		else
@@ -1389,7 +1401,10 @@ returnValue ExportNLPSolver::setConstraints(const OCP& _ocp)
 
 			if (v.isZero() == false)
 			{
-				pacEvHu.setup("evHu", Eigen::Map<DMatrix>(v.data(), dimPacH, NU), REAL, ACADO_WORKSPACE);
+				// MRJ: See comment on line 896
+				DMatrix tmp2(dimPacH, NU, v.data());
+				//pacEvHu.setup("evHu", Eigen::Map<DMatrix>(v.data(), dimPacH, NU), REAL, ACADO_WORKSPACE);
+				pacEvHu.setup("evHu", tmp2, REAL, ACADO_WORKSPACE);
 			}
 		}
 		else
@@ -1408,7 +1423,10 @@ returnValue ExportNLPSolver::setConstraints(const OCP& _ocp)
 
 			if (v.isZero() == false)
 			{
-				pacEvDDH.setup("evDDH", Eigen::Map<DMatrix>(v.data(), (NX+NU), (NX+NU)), REAL, ACADO_WORKSPACE);
+				// MRJ: See comment on line 896
+				DMatrix tmp2((NX+NU), (NX+NU), v.data());
+				//pacEvDDH.setup("evDDH", Eigen::Map<DMatrix>(v.data(), (NX+NU), (NX+NU)), REAL, ACADO_WORKSPACE);
+				pacEvDDH.setup("evDDH", tmp2, REAL, ACADO_WORKSPACE);
 			}
 		}
 		else if( secondOrder )
@@ -1606,7 +1624,7 @@ returnValue ExportNLPSolver::setupAuxiliaryFunctions()
 {
     string moduleName;
 	get(CG_MODULE_NAME, moduleName);
-    
+
 	////////////////////////////////////////////////////////////////////////////
 	//
 	// Shift controls
@@ -1948,7 +1966,7 @@ returnValue ExportNLPSolver::setupArrivalCostCalculation()
 	xAC.setup("xAC", NX, 1, REAL, ACADO_VARIABLES);
 	xAC.setDoc("Arrival cost term: a priori state estimate.");
 	DxAC.setup("DxAC", NX, 1, REAL, ACADO_WORKSPACE);
-    
+
     string moduleName;
 	get(CG_MODULE_NAME, moduleName);
 

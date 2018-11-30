@@ -394,9 +394,10 @@ public:
 	virtual Expression* clone() const
 	{ return new Derived( static_cast< Derived const& >( *this ) ); }
 
-	/** A function for resetting of the istance counter. */
+	/** A function for resetting of the instance counter. */
 	static returnValue clearStaticCounters()
 	{ count = 0; return SUCCESSFUL_RETURN; }
+
 
 private:
 	static unsigned count;

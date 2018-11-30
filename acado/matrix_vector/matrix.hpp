@@ -55,6 +55,8 @@ public:
 	typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor | Eigen::AutoAlign> Base;
 
 
+	// Additional Eigen traits
+
 	/** Constructor from any other Eigen::MatrixBase derived class. */
 	template<typename OtherDerived>
 	inline GenericMatrix(const Eigen::MatrixBase<OtherDerived>& other) : Base( other ) {}
@@ -472,10 +474,27 @@ namespace Eigen
 {
 namespace internal
 {
+	/*
 template<typename T>
 struct traits< ACADO::GenericMatrix< T > >
 	: traits<Matrix<T, Dynamic, Dynamic, Eigen::RowMajor | Eigen::AutoAlign> >
 {};
+	*/
+
+	template <typename T>
+	struct traits< ACADO::GenericMatrix< T > > {
+		typedef Eigen::Dense StorageKind;
+		typedef Eigen::MatrixXpr XprKind;
+		typedef typename Eigen::Index StorageIndex;
+		typedef T Scalar;
+		enum {
+			Flags = Eigen::RowMajor | Eigen::AutoAlign,
+			RowsAtCompileTime = Dynamic,
+			ColsAtCompileTime = Dynamic,
+			MaxRowsAtCompileTime = Dynamic,
+			MaxColsAtCompileTime = Dynamic
+		};
+	};
 
 } // namespace internal
 } // namespace Eigen
