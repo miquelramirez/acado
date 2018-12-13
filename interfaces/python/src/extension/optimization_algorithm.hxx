@@ -57,6 +57,35 @@ namespace ACADO {
         void            set_discretization_type(StateDiscretizationType v);
         double          get_kkt_tolerance() const;
         void            set_kkt_tolerance(double v);
+        double          get_levenberg_marquardt() const;
+        void            set_levenberg_marquardt(double v);
+        PrintLevel      get_print_level() const;
+        void            set_print_level(PrintLevel v);
+        PrintLevel      get_integrator_print_level() const;
+        void            set_integrator_print_level(PrintLevel v);
+        HessianApproximationMode
+                        get_hessian_approximation() const;
+        void            set_hessian_approximation(HessianApproximationMode m);
+        SensitivityType get_dynamic_sensitivity() const;
+        void            set_dynamic_sensitivity(SensitivityType v);
+        SensitivityType get_objective_sensitivity() const;
+        void            set_objective_sensitivity(SensitivityType v);
+        SensitivityType get_constraint_sensitivity() const;
+        void            set_constraint_sensitivity(SensitivityType v);
+        double          get_line_search_tolerance() const;
+        void            set_line_search_tolerance(double v);
+        double          get_minimum_line_search_parameter() const;
+        void            set_minimum_line_search_parameter(double v);
+        int             get_maximum_number_of_QP_iterations() const;
+        void            set_maximum_number_of_QP_iterations(int v);
+        double          get_initial_step_size() const;
+        void            set_initial_step_size(double v);
+        double          get_minimum_step_size() const;
+        void            set_minimum_step_size(double v);
+        double          get_maximum_step_size() const;
+        void            set_maximum_step_size(double v);
+        double          get_step_size_tuning() const;
+        void            set_step_size_tuning(double v);
 
         bp::list    Xd() { return _py_xd; }
         bp::list    Xa() { return _py_xa; }
