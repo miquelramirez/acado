@@ -46,8 +46,17 @@ namespace ACADO {
         void    initialize_parameters( PyVariablesGrid::ptr );
         // accessors
     public:
-        int     max_num_iterations() const;
-        void    set_max_num_iterations(int v) { set(MAX_NUM_ITERATIONS, v); }
+        int             max_num_iterations() const;
+        void            set_max_num_iterations(int v) { set(MAX_NUM_ITERATIONS, v); }
+        IntegratorType  get_integrator_type() const;
+        void            set_integrator_type(IntegratorType v);
+        double          get_integrator_tolerance() const;
+        void            set_integrator_tolerance(double v);
+        StateDiscretizationType
+                        get_discretizaton_type() const;
+        void            set_discretization_type(StateDiscretizationType v);
+        double          get_kkt_tolerance() const;
+        void            set_kkt_tolerance(double v);
 
         bp::list    Xd() { return _py_xd; }
         bp::list    Xa() { return _py_xa; }

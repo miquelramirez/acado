@@ -62,7 +62,55 @@ namespace ACADO {
     int
     PyOptimizationAlgorithm::max_num_iterations() const {
         int param_value;
-        return get(MAX_NUM_ITERATIONS, param_value);
+        get(MAX_NUM_ITERATIONS, param_value);
+        return param_value;
+    }
+
+    IntegratorType
+    PyOptimizationAlgorithm::get_integrator_type() const {
+        int param_value;
+        get(INTEGRATOR_TYPE, param_value);
+        return (IntegratorType)param_value;
+    }
+
+    void
+    PyOptimizationAlgorithm::set_integrator_type(IntegratorType v) {
+        set(INTEGRATOR_TYPE, v);
+    }
+
+    double
+    PyOptimizationAlgorithm::get_integrator_tolerance() const {
+        double param_value;
+        get(INTEGRATOR_TOLERANCE, param_value);
+        return param_value;
+    }
+
+    void
+    PyOptimizationAlgorithm::set_integrator_tolerance(double v) {
+        set(INTEGRATOR_TOLERANCE, v);
+    }
+
+    void
+    PyOptimizationAlgorithm::set_discretization_type(StateDiscretizationType v) {
+        set(DISCRETIZATION_TYPE, v);
+    }
+
+    StateDiscretizationType
+    PyOptimizationAlgorithm::get_discretizaton_type() const {
+        int param_value;
+        get(DISCRETIZATION_TYPE, param_value);
+        return (StateDiscretizationType)param_value;
+    }
+
+    void
+    PyOptimizationAlgorithm::set_kkt_tolerance(double v) {
+        set(KKT_TOLERANCE, v);
+    }
+
+    double
+    PyOptimizationAlgorithm::get_kkt_tolerance() const {
+        double param_value;
+        get(KKT_TOLERANCE, param_value);
         return param_value;
     }
 
@@ -87,6 +135,24 @@ namespace ACADO {
 void define_optimization_algorithm() {
     using namespace ACADO;
 
+    bp::enum_<IntegratorType>("IntegratorType")
+            .value("INT_RK12", IntegratorType::INT_RK12)
+            .value("INT_RK23", IntegratorType::INT_RK23)
+            .value("INT_RK45", IntegratorType::INT_RK45)
+            .value("INT_RK78", IntegratorType::INT_RK78)
+            .value("INT_BDF", IntegratorType::INT_BDF)
+            .value("INT_DISCRETE", IntegratorType::INT_DISCRETE)
+            .value("INT_LYAPUNOV45", IntegratorType::INT_LYAPUNOV45)
+            .value("INT_UNKNOWN", IntegratorType::INT_UNKNOWN)
+    ;
+
+    bp::enum_<StateDiscretizationType>("DiscretizationType")
+        .value("SINGLE_SHOOTING", StateDiscretizationType::SINGLE_SHOOTING)
+        .value("MULTIPLE_SHOOTING", StateDiscretizationType::MULTIPLE_SHOOTING)
+        .value("COLLOCATION", StateDiscretizationType::COLLOCATION)
+        .value("UNKNOWN_DISCRETIZATION", StateDiscretizationType::UNKNOWN_DISCRETIZATION)
+        ;
+
     bp::class_< PyOptimizationAlgorithm,
                 PyOptimizationAlgorithm::ptr,
                 boost::noncopyable>("OptimizationAlgorithm",
@@ -108,5 +174,17 @@ void define_optimization_algorithm() {
         .add_property("max_num_iterations",
                         &PyOptimizationAlgorithm::max_num_iterations,
                         &PyOptimizationAlgorithm::set_max_num_iterations)
+        .add_property("integrator_type",
+                        &PyOptimizationAlgorithm::get_integrator_type,
+                        &PyOptimizationAlgorithm::set_integrator_type)
+        .add_property("integrator_tolerance",
+                        &PyOptimizationAlgorithm::get_integrator_tolerance,
+                        &PyOptimizationAlgorithm::set_integrator_tolerance)
+        .add_property("discretization_type",
+                        &PyOptimizationAlgorithm::get_discretizaton_type,
+                        &PyOptimizationAlgorithm::set_discretization_type)
+        .add_property("kkt_tolerance",
+                        &PyOptimizationAlgorithm::get_kkt_tolerance,
+                        &PyOptimizationAlgorithm::set_kkt_tolerance)
         ;
 }
