@@ -50,3 +50,24 @@ def min_time_rocket_init():
     p_init.set_vector(0, [7.44])
 
     return x_init, u_init, p_init
+
+def initialize_semi_implicit_dae_context():
+    ctx = ac.Context("semi-implicit-DAE")
+
+    x = ctx.new_differential_state("x")
+    l = ctx.new_differential_state("l")
+    z = ctx.new_algebraic_state("z")
+    u = ctx.new_control_input("u")
+
+    X = [x, l, z]
+    U = [u]
+
+    dot_x = ctx.sub(ctx.add(ctx.mul(ctx.constant(0.5), ctx.mul(x, x)),
+                    ctx.add(u, ctx.mul(ctx.constant(0.5), z))), x)
+    dot_l = ctx.add(ctx.mul(x, x), ctx.mul(ctx.constant(3.0), ctx.mul(u, u)))
+    odes = [(x, dot_x), (l, dot_l)]
+
+    zx_coupling = ctx.add(ctx.sub(ctx.add(z, ctx.exp(z)), ctx.constant(1.0)), x)
+    impl_odes = [ ctx.equal(zx_coupling, ctx.constant(0.0))]
+
+    return ctx, X, U, odes, impl_odes

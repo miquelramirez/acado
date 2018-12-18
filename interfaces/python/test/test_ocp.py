@@ -9,7 +9,8 @@ import pytest
 import acado as ac
 
 
-from .common import initialize_rocket_context, min_time_rocket_init
+from .common import initialize_rocket_context, min_time_rocket_init,\
+    initialize_semi_implicit_dae_context
 
 def test_ocp_rocket_setup():
 
@@ -158,3 +159,60 @@ def test_ocp_rocket_with_init():
 
     assert de_sys.num_dynamic_equations == 3
     assert solver.objective_value == 7.4417405995046995
+
+def test_ocp_semi_implicit_dae():
+    ctx, X, U, odes, impl_odes = initialize_semi_implicit_dae_context()
+
+    de_sys = ac.DifferentialEquation(ctx, 0.0, 10.0)
+    for x, de in odes:
+        de_sys.set_ode(x, de)
+    for eq in impl_odes:
+        de_sys.set_implicit_ode(eq)
+
+    ocp = ac.OCP(ctx, 0.0, 10.0, 10)
+
+    ocp.set_terminal_cost(X[1])
+
+    ocp.add_continuous_diff_constraints(de_sys)
+
+    ocp.add_initial_constraint(ctx.equal(X[0], 1.0))
+    ocp.add_initial_constraint(ctx.equal(X[1], 0.0))
+
+    solver = ac.OptimizationAlgorithm(ocp)
+    solver.absolute_tolerance = 1e-7
+    solver.integrator_tolerance = 1e-7
+    solver.hessian_approximation = ac.HessianApproximation.EXACT_HESSIAN
+
+    solver.solve()
+
+    times = np.array(solver.t) * (solver.tf-solver.t0) + solver.t0
+    tau_Xd = np.hstack([np.array(x_k).reshape(len(X[:2]),1) for x_k in solver.Xd])
+    tau_Xa = np.hstack([np.array(x_k).reshape(len(X[2:]),1) for x_k in solver.Xa])
+    tau_U = np.hstack([np.array(u_k).reshape(len(U),1) for u_k in solver.U])
+
+    fig, axes = plt.subplots(3,1)
+    axes[0].grid(True)
+    axes[0].set_xlabel('time')
+    for x_dim in range(tau_Xd.shape[0]):
+        # Plot a single line
+        ys = tau_Xd[x_dim,:]
+        axes[0].plot(times, ys, label='x_{}'.format(x_dim))
+    axes[0].legend()
+
+    axes[1].grid(True)
+    axes[1].set_xlabel('time')
+    for x_dim in range(tau_Xa.shape[0]):
+        # Plot a single line
+        ys = tau_Xa[x_dim,:]
+        axes[1].plot(times, ys, label='z_{}'.format(x_dim))
+    axes[1].legend()
+
+    axes[2].grid(True)
+    axes[2].set_xlabel('time')
+    for x_dim in range(tau_U.shape[0]):
+        # Plot a single line
+        ys = tau_U[x_dim,:]
+        axes[2].plot(times, ys, label='u_{}'.format(x_dim))
+    axes[2].legend()
+
+    plt.savefig('semi-implicit-dae.trajectory.pdf')
