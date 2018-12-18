@@ -13,7 +13,7 @@ namespace ACADO {
 
     void
     PyOCP::add_continuous_diff_constraints( PyDifferentialEquation::ptr de ) {
-        subjectTo(*de);
+        subjectTo(*de->get_odes());
     }
 
     void
