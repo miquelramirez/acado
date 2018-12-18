@@ -50,6 +50,8 @@ namespace ACADO {
         void            set_max_num_iterations(int v) { set(MAX_NUM_ITERATIONS, v); }
         IntegratorType  get_integrator_type() const;
         void            set_integrator_type(IntegratorType v);
+        double          get_absolute_tolerance() const;
+        void            set_absolute_tolerance(double v);
         double          get_integrator_tolerance() const;
         void            set_integrator_tolerance(double v);
         StateDiscretizationType

@@ -79,6 +79,18 @@ namespace ACADO {
     }
 
     double
+    PyOptimizationAlgorithm::get_absolute_tolerance() const {
+        double param_value;
+        get(ABSOLUTE_TOLERANCE, param_value);
+        return param_value;
+    }
+
+    void
+    PyOptimizationAlgorithm::set_absolute_tolerance(double v) {
+        set(ABSOLUTE_TOLERANCE, v);
+    }
+
+    double
     PyOptimizationAlgorithm::get_integrator_tolerance() const {
         double param_value;
         get(INTEGRATOR_TOLERANCE, param_value);
@@ -362,6 +374,9 @@ void define_optimization_algorithm() {
         .add_property("max_num_iterations",
                         &PyOptimizationAlgorithm::max_num_iterations,
                         &PyOptimizationAlgorithm::set_max_num_iterations)
+        .add_property("absolute_tolerance",
+                        &PyOptimizationAlgorithm::get_absolute_tolerance,
+                        &PyOptimizationAlgorithm::set_absolute_tolerance)
         .add_property("integrator_type",
                         &PyOptimizationAlgorithm::get_integrator_type,
                         &PyOptimizationAlgorithm::set_integrator_type)
