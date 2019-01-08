@@ -35,34 +35,7 @@ namespace ACADO {
                 _de = new DifferentialEquation(*(ctx->get_parameter(tStart)), *(ctx->get_parameter(tEnd)));
             }
         }
-        /*
-        bp::extract<double> is_tStart_double(t0);
-        if (!is_tStart_double.check()) {
-            TermRef tStart = bp::extract<TermRef>(t0);
-            bp::extract<double> is_tEnd_double(tf);
-            if (!is_tEnd_double.check()) {
-                std::cout << "tStart (TermRef), tEnd (TermRef)" << std::endl;
-                TermRef tEnd = bp::extract<TermRef>(tf);
-                _de = new DifferentialEquation(*(ctx->get_parameter(tStart)), *(ctx->get_parameter(tEnd)));
-            } else {
-                std::cout << "tStart (TermRef), tEnd (double)" << std::endl;
-                double tEnd = (double)is_tEnd_double;
-                _de = new DifferentialEquation(*(ctx->get_parameter(tStart)), tEnd);
-            }
-        } else {
-            double tStart = (double)is_tStart_double;
-            bp::extract<double> is_tEnd_double(tf);
-            if (!is_tEnd_double.check()) {
-                std::cout << "tStart (double), tEnd (TermRef)" << std::endl;
-                TermRef tEnd = bp::extract<TermRef>(tf);
-                _de = new DifferentialEquation(tStart, *(ctx->get_parameter(tEnd)));
-            } else {
-                std::cout << "tStart (double), tEnd (double)" << std::endl;
-                double tEnd = (double)is_tEnd_double;
-                _de = new DifferentialEquation(tStart, tEnd);
-            }
-        }
-        */
+
         if (_de == nullptr) {
             throw std::domain_error("Invalid arguments for constructor of DifferentialEquation");
         }
@@ -86,7 +59,32 @@ namespace ACADO {
         auto constraint = _ctx->get_atom(equation);
         (*_de) << constraint->getExpression();
     }
+
+    PyDiscretizedDifferentialEquation::PyDiscretizedDifferentialEquation(PyContext::ptr ctx, double h)
+        : DiscretizedDifferentialEquation(h), _ctx(ctx) {
+
+    }
+
+    PyDiscretizedDifferentialEquation::~PyDiscretizedDifferentialEquation() {
+
+    }
+
+    void
+    PyDiscretizedDifferentialEquation::set_ode(TermRef lhs, TermRef rhs) {
+        auto lhs_var = _ctx->get_d_var(lhs);
+        auto eq_expr = _ctx->get(rhs);
+
+        (*this) << dot(*lhs_var) == *eq_expr;
+    }
+
+    void
+    PyDiscretizedDifferentialEquation::set_implicit_ode(AtomRef equation) {
+        auto constraint = _ctx->get_atom(equation);
+        (*this) << constraint->getExpression();
+    }
 }
+
+
 
 void define_differential_equation() {
     using namespace ACADO;
@@ -98,5 +96,18 @@ void define_differential_equation() {
         .def("set_implicit_ode", &PyDifferentialEquation::set_implicit_ode)
         .add_property("num_dynamic_equations", &PyDifferentialEquation::getNumDynamicEquations)
         .add_property("num_algebraic_equations", &PyDifferentialEquation::getNumAlgebraicEquations)
+        ;
+}
+
+void define_discretized_differential_equation() {
+    using namespace ACADO;
+
+    bp::class_<PyDiscretizedDifferentialEquation, PyDiscretizedDifferentialEquation::ptr,
+        boost::noncopyable>("DiscretizedDifferentialEquation",
+            bp::init<PyContext::ptr, double>())
+        .def("set_ode", &PyDiscretizedDifferentialEquation::set_ode)
+        .def("set_implicit_ode", &PyDiscretizedDifferentialEquation::set_implicit_ode)
+        .add_property("num_dynamic_equations", &PyDiscretizedDifferentialEquation::getNumDynamicEquations)
+        .add_property("num_algebraic_equations", &PyDiscretizedDifferentialEquation::getNumAlgebraicEquations)
         ;
 }

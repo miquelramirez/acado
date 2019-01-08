@@ -25,12 +25,14 @@ namespace ACADO {
         // interface
     public:
         void add_continuous_diff_constraints( PyDifferentialEquation::ptr );
+        void add_discrete_diff_constraints( PyDiscretizedDifferentialEquation::ptr );
 
         void add_initial_constraint( AtomRef atom );
         void add_terminal_constraint( AtomRef atom );
         void add_constraint( AtomRef atom );
 
         void set_terminal_cost( TermRef expr );
+        void set_stage_cost( TermRef expr);
 
         OCP& problem() { return *_cp; }
     };

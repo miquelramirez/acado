@@ -12,6 +12,7 @@ BOOST_PYTHON_MODULE( _acado )
     define_grids();
     define_context();
     define_differential_equation();
+    define_discretized_differential_equation();
     define_ocp();
     define_optimization_algorithm();
 }

@@ -30,6 +30,12 @@ namespace ACADO {
     }
 
     void
+    PyOCP::add_discrete_diff_constraints( PyDiscretizedDifferentialEquation::ptr de ) {
+        _cp->subjectTo(*de);
+    }
+
+
+    void
     PyOCP::add_initial_constraint(AtomRef atom) {
         _cp->subjectTo(AT_START, *_ctx->get_atom(atom));
     }
@@ -52,6 +58,11 @@ namespace ACADO {
         _cp->minimizeMayerTerm(*_ctx->get(expr));
     }
 
+    void
+    PyOCP::set_stage_cost(TermRef expr) {
+        _cp->minimizeLagrangeTerm(*_ctx->get(expr));
+    }
+
 }
 
 void define_ocp() {
@@ -61,9 +72,11 @@ void define_ocp() {
         boost::noncopyable>("OCP",
             bp::init<PyContext::ptr, double, bp::object, int>())
             .def("add_continuous_diff_constraints", &PyOCP::add_continuous_diff_constraints)
+            .def("add_discrete_diff_constraints", &PyOCP::add_discrete_diff_constraints)
             .def("add_initial_constraint", &PyOCP::add_initial_constraint)
             .def("add_terminal_constraint", &PyOCP::add_terminal_constraint)
             .def("add_constraint", &PyOCP::add_constraint)
             .def("set_terminal_cost", &PyOCP::set_terminal_cost)
+            .def("set_stage_cost", &PyOCP::set_stage_cost)
         ;
 }

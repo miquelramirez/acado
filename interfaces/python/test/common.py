@@ -71,3 +71,25 @@ def initialize_semi_implicit_dae_context():
     impl_odes = [ ctx.equal(zx_coupling, ctx.constant(0.0))]
 
     return ctx, X, U, odes, impl_odes
+
+def initialize_discrete_time_system_context(h):
+    ctx = ac.Context("discrete-time-systemp")
+
+    v = ctx.new_differential_state("v")
+    s = ctx.new_differential_state("s")
+    m = ctx.new_differential_state("m")
+    u = ctx.new_control_input("u")
+
+    X = [s, v, m]
+    U = [u]
+
+    h_sym = ctx.constant(h)
+    dot_s = ctx.add(s, ctx.mul(h_sym, v))
+    dot_v = ctx.add(v, ctx.mul(h_sym, ctx.sub(u, ctx.mul(ctx.constant(0.02), ctx.mul(v, v)))))
+    dot_m = ctx.sub(m, ctx.mul(h_sym, ctx.mul(ctx.constant(0.01), ctx.mul(u, u))))
+
+    odes = [(s, dot_s), (v, dot_v), (m, dot_m)]
+
+    terminal = ctx.mul(u, u)
+
+    return ctx, X, U, odes, terminal

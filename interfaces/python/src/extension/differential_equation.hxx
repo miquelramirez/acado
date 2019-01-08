@@ -4,6 +4,7 @@
 #include "context.hxx"
 
 extern void define_differential_equation();
+extern void define_discretized_differential_equation();
 
 namespace ACADO {
 
@@ -31,4 +32,21 @@ namespace ACADO {
 
     };
 
+    class PyDiscretizedDifferentialEquation : public DiscretizedDifferentialEquation {
+        // Attributes
+    private:
+        PyContext::ptr _ctx;
+    public:
+        typedef std::shared_ptr<PyDiscretizedDifferentialEquation> ptr;
+
+        //constructors
+    public:
+        PyDiscretizedDifferentialEquation( PyContext::ptr, double h);
+        virtual ~PyDiscretizedDifferentialEquation();
+
+        // Interface
+    public:
+        void set_ode( TermRef lhs, TermRef rhs);
+        void set_implicit_ode( AtomRef equation );
+    };
 }
