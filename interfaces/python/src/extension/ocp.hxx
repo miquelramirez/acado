@@ -8,16 +8,18 @@ extern void define_ocp();
 
 namespace ACADO {
 
-    class PyOCP : public OCP {
+    class PyOCP {
         // types
     public:
         typedef std::shared_ptr<PyOCP> ptr;
         // attributes
     private:
+        OCP*                _cp;
         PyContext::ptr      _ctx;
         // constructors
     public:
-        PyOCP( PyContext::ptr ctx, double t0, TermRef tmax, int N );
+        //PyOCP( PyContext::ptr ctx, double t0, TermRef tmax, int N );
+        PyOCP( PyContext::ptr ctx, double t0, bp::object tmax, int N);
         virtual ~PyOCP();
 
         // interface
@@ -29,5 +31,7 @@ namespace ACADO {
         void add_constraint( AtomRef atom );
 
         void set_terminal_cost( TermRef expr );
+
+        OCP& problem() { return *_cp; }
     };
 }

@@ -4,7 +4,7 @@
 namespace ACADO {
 
     PyOptimizationAlgorithm::PyOptimizationAlgorithm(PyOCP::ptr ocp)
-        : OptimizationAlgorithm(*ocp), _ocp(ocp) {
+        : OptimizationAlgorithm(ocp->problem()), _ocp(ocp) {
 
     }
 
