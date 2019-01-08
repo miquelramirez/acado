@@ -223,7 +223,7 @@ def test_ocp_discrete_time():
     t_end = 10.0
     h = 0.01
 
-    ctx, X, U, odes, terminal = initialize_discrete_time_system_context(h)
+    ctx, X, U, odes, stage_cost = initialize_discrete_time_system_context(h)
 
     de_sys = ac.DiscretizedDifferentialEquation(ctx, h)
     for x, de in odes:
@@ -231,7 +231,7 @@ def test_ocp_discrete_time():
 
     ocp = ac.OCP(ctx, t_start, t_end, 50)
 
-    ocp.set_stage_cost(terminal)
+    ocp.set_stage_cost(stage_cost)
 
     ocp.add_discrete_diff_constraints(de_sys)
 
@@ -253,7 +253,10 @@ def test_ocp_discrete_time():
 
     # plot results
     times = np.array(solver.t) * (solver.tf-solver.t0) + solver.t0
-    tau_X = np.hstack([np.array(x_k).reshape(len(X),1) for x_k in solver.Xd])
+    for x_k in solver.Xd:
+        print(x_k[:len(X)])
+    tau_X = np.hstack([np.array(x_k[:len(X)]).reshape(len(X),1) for x_k in solver.Xd])
+    tau_J = np.hstack([np.array(x_k[len(X):]).reshape(1,1) for x_k in solver.Xd])
     tau_U = np.hstack([np.array(u_k).reshape(len(U),1) for u_k in solver.U])
 
     fig, axes = plt.subplots(2,1)
@@ -276,4 +279,4 @@ def test_ocp_discrete_time():
     plt.savefig('test_discrete_time_rocket_min_energy.trajectory.pdf')
 
     assert de_sys.num_dynamic_equations == 3
-    assert solver.objective_value == 7.4417405995042
+    assert solver.objective_value == 1.2084178048256937

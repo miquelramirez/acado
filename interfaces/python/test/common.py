@@ -90,6 +90,6 @@ def initialize_discrete_time_system_context(h):
 
     odes = [(s, dot_s), (v, dot_v), (m, dot_m)]
 
-    terminal = ctx.mul(u, u)
+    stage_cost = ctx.mul(u, u)
 
-    return ctx, X, U, odes, terminal
+    return ctx, X, U, odes, stage_cost
