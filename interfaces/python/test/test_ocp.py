@@ -253,8 +253,6 @@ def test_ocp_discrete_time():
 
     # plot results
     times = np.array(solver.t) * (solver.tf-solver.t0) + solver.t0
-    for x_k in solver.Xd:
-        print(x_k[:len(X)])
     tau_X = np.hstack([np.array(x_k[:len(X)]).reshape(len(X),1) for x_k in solver.Xd])
     tau_J = np.hstack([np.array(x_k[len(X):]).reshape(1,1) for x_k in solver.Xd])
     tau_U = np.hstack([np.array(u_k).reshape(len(U),1) for u_k in solver.U])
@@ -279,4 +277,4 @@ def test_ocp_discrete_time():
     plt.savefig('test_discrete_time_rocket_min_energy.trajectory.pdf')
 
     assert de_sys.num_dynamic_equations == 3
-    assert solver.objective_value == 1.2084178048256937
+    assert solver.objective_value == 1.2084178048256953

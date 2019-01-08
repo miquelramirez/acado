@@ -75,8 +75,8 @@ def initialize_semi_implicit_dae_context():
 def initialize_discrete_time_system_context(h):
     ctx = ac.Context("discrete-time-systemp")
 
-    v = ctx.new_differential_state("v")
     s = ctx.new_differential_state("s")
+    v = ctx.new_differential_state("v")
     m = ctx.new_differential_state("m")
     u = ctx.new_control_input("u")
 
