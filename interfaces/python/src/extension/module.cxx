@@ -2,6 +2,7 @@
 
 #include "context.hxx"
 #include "differential_equation.hxx"
+#include "transition.hxx"
 #include "ocp.hxx"
 #include "optimization_algorithm.hxx"
 #include "grids.hxx"
@@ -13,6 +14,7 @@ BOOST_PYTHON_MODULE( _acado )
     define_context();
     define_differential_equation();
     define_discretized_differential_equation();
+    define_transition();
     define_ocp();
     define_optimization_algorithm();
 }

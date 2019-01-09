@@ -10,7 +10,8 @@ import acado as ac
 
 
 from .common import initialize_rocket_context, min_time_rocket_init,\
-    initialize_semi_implicit_dae_context, initialize_discrete_time_system_context
+    initialize_semi_implicit_dae_context, initialize_discrete_time_system_context,\
+    setup_jojo_model
 
 def test_ocp_rocket_setup():
 
@@ -278,3 +279,8 @@ def test_ocp_discrete_time():
 
     assert de_sys.num_dynamic_equations == 3
     assert solver.objective_value == 1.2084178048256953
+
+def test_hybrid_ocp():
+    ctx, X, U, trans = setup_jojo_model()
+
+    assert False

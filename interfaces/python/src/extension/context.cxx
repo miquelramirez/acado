@@ -93,6 +93,15 @@ namespace ACADO {
         return z_ref;
     }
 
+    TermRef
+    PyContext::new_intermediate_state(std::string name) {
+        auto z = std::make_shared<IntermediateState>(name, 1, 1);
+        TermRef z_ref = register_expr(z);
+        _intermediate_vars[z_ref] = z;
+        _num_vars++;
+        return z_ref;
+    }
+
     DifferentialVarPtr
     PyContext::get_d_var(TermRef i) {
         auto it = _diff_vars.find(i);
@@ -114,6 +123,14 @@ namespace ACADO {
         auto it = _algebraic_vars.find(i);
         if (it == _algebraic_vars.end())
             throw std::logic_error("Term is not an algebraic state variable!");
+        return it->second;
+    }
+
+    IntermVarPtr
+    PyContext::get_i_var(TermRef i) {
+        auto it = _intermediate_vars.find(i);
+        if (it == _intermediate_vars.end())
+            throw std::logic_error("Term is not an intermediate state variable!");
         return it->second;
     }
 

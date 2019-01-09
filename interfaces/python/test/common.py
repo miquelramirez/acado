@@ -93,3 +93,59 @@ def initialize_discrete_time_system_context(h):
     stage_cost = ctx.mul(u, u)
 
     return ctx, X, U, odes, stage_cost
+
+def setup_jojo_model():
+
+    ctx = ac.Context("jojo")
+    # the position of the hand
+    x = ctx.new_differential_state("x")
+    # the velocity of the hand
+    v = ctx.new_differential_state("v")
+    # the position of the jojo
+    y = ctx.new_differential_state("y")
+    # the velocity of the jojo
+    w = ctx.new_differential_state("w")
+
+    # the control action of the "hand"
+    u = ctx.new_control_input("u")
+
+    # timings of mode switches
+    T1 = ctx.new_parameter("T1")
+    T2 = ctx.new_parameter("T2")
+
+    # model parameters
+    m = 0.200 # mass of the jojo
+    J = 1e-4 # inertia of the jojo
+    r = 0.010 # coiling radius of the jojo
+    g = 9.81 # gravitational constant
+    a = 1e-2 # coiling friction
+    L = 1.0 # length of the rope
+
+    k = J/(m*r*r+J) # damping ratio of the jojo
+    mu = 1.0 - k # effective mass ratio
+
+    f1 = ac.DifferentialEquation(ctx, 0.0, T1)
+    f1.set_ode(x, v)
+    f1.set_ode(v, u)
+    f1.set_ode(y, w)
+    w1 = ctx.mul(ctx.mul(ctx.constant(-1.0), ctx.constant(mu)), ctx.constant(g))
+    w2 = ctx.mul(ctx.constant(k), u)
+    w3 = ctx.mul(ctx.constant(a), ctx.sub(v, w))
+    f1.set_ode(w, ctx.add(w1, ctx.add(w2, w3)))
+
+    z = ctx.mul(ctx.constant(k), v)
+
+    j = ac.Transition(ctx)
+    j.set_constraint(x, x)
+    j.set_constraint(v, v)
+    j.set_constraint(y, y)
+    j.set_constraint(w, ctx.add(ctx.mul(z,z), ctx.mul(ctx.constant(k), ctx.sub(ctx.mul(w,w), ctx.mul(ctx.constant(2.0), ctx.mul(w, v))))))
+
+
+    f2 = ac.DifferentialEquation(ctx, T1, T2)
+    f2.set_ode(x, v)
+    f2.set_ode(v, u)
+    f2.set_ode(y, w)
+    f2.set_ode(w, ctx.add(w1, ctx.add(w2, w3)))
+
+    return ctx, [x, v, y, w], [u], [f1, j, f2]

@@ -22,6 +22,7 @@ namespace  ACADO {
         std::map< TermRef, ControlVarPtr >          _control_vars;
         std::map< TermRef, AlgebraicVarPtr >        _algebraic_vars;
         std::map< TermRef, ParameterPtr >           _parameters;
+        std::map< TermRef, IntermVarPtr >           _intermediate_vars;
         std::map< TermRef, ExpressionPtr >          _expressions;
         std::vector< ExpressionPtr >                _terms;
         std::vector< AtomPtr >                      _atoms;
@@ -42,6 +43,7 @@ namespace  ACADO {
         TermRef     new_control_input(std::string name);
         TermRef     new_algebraic_state(std::string name);
         TermRef     new_parameter(std::string name);
+        TermRef     new_intermediate_state(std::string name);
 
         TermRef     constant(double v);
 
@@ -90,6 +92,7 @@ namespace  ACADO {
         DifferentialVarPtr  get_d_var(TermRef i);
         ControlVarPtr       get_c_var(TermRef i);
         AlgebraicVarPtr     get_a_var(TermRef i);
+        IntermVarPtr  get_i_var(TermRef i);
         ParameterPtr        get_parameter(TermRef i);
 
     };
