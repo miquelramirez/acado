@@ -15,7 +15,6 @@ namespace  ACADO {
         //types:
     public:
         typedef std::shared_ptr<PyContext>  ptr;
-
         //Attributes
     private:
         std::map< TermRef, DifferentialVarPtr >     _diff_vars;

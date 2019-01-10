@@ -98,16 +98,21 @@ def setup_jojo_model():
 
     ctx = ac.Context("jojo")
     # the position of the hand
-    x = ctx.new_differential_state("x")
+    x1 = ctx.new_differential_state("x1")
+    x2 = ctx.new_differential_state("x2")
     # the velocity of the hand
-    v = ctx.new_differential_state("v")
+    v1 = ctx.new_differential_state("v1")
+    v2 = ctx.new_differential_state("v2")
     # the position of the jojo
-    y = ctx.new_differential_state("y")
+    y1 = ctx.new_differential_state("y1")
+    y2 = ctx.new_differential_state("y2")
     # the velocity of the jojo
-    w = ctx.new_differential_state("w")
+    w1 = ctx.new_differential_state("w1")
+    w2 = ctx.new_differential_state("w2")
 
     # the control action of the "hand"
-    u = ctx.new_control_input("u")
+    u1 = ctx.new_control_input("u1")
+    u2 = ctx.new_control_input("u2")
 
     # timings of mode switches
     T1 = ctx.new_parameter("T1")
@@ -124,28 +129,26 @@ def setup_jojo_model():
     k = J/(m*r*r+J) # damping ratio of the jojo
     mu = 1.0 - k # effective mass ratio
 
-    f1 = ac.DifferentialEquation(ctx, 0.0, T1)
-    f1.set_ode(x, v)
-    f1.set_ode(v, u)
-    f1.set_ode(y, w)
-    w1 = ctx.mul(ctx.mul(ctx.constant(-1.0), ctx.constant(mu)), ctx.constant(g))
-    w2 = ctx.mul(ctx.constant(k), u)
-    w3 = ctx.mul(ctx.constant(a), ctx.sub(v, w))
-    f1.set_ode(w, ctx.add(w1, ctx.add(w2, w3)))
+    f1 = ac.DifferentialEquation(ctx, 0.0, 1.0)
+    f1.set_ode(x1, ctx.mul(v1, T1))
+    f1.set_ode(v1, ctx.mul(u1, T1))
+    f1.set_ode(y1, ctx.mul(w1, T1))
+    w11 = ctx.mul(ctx.mul(ctx.constant(-1.0), ctx.constant(mu)), ctx.constant(g))
+    w21 = ctx.mul(ctx.constant(k), u1)
+    w31 = ctx.mul(ctx.constant(a), ctx.sub(v1, w1))
+    f1.set_ode(w1, ctx.mul(ctx.add(w11, ctx.add(w21, w31)),T1))
+    f1.set_ode(x2, ctx.mul(v2, T2))
+    f1.set_ode(v2, ctx.mul(u2, T2))
+    f1.set_ode(y2, ctx.mul(w2, T2))
+    w12 = ctx.mul(ctx.mul(ctx.constant(-1.0), ctx.constant(mu)), ctx.constant(g))
+    w22 = ctx.mul(ctx.constant(k), u2)
+    w32 = ctx.mul(ctx.constant(a), ctx.sub(v2, w2))
+    f1.set_ode(w2, ctx.mul(ctx.add(w12, ctx.add(w22, w32)),T2))
 
-    z = ctx.mul(ctx.constant(k), v)
 
-    j = ac.Transition(ctx)
-    j.set_constraint(x, x)
-    j.set_constraint(v, v)
-    j.set_constraint(y, y)
-    j.set_constraint(w, ctx.add(ctx.mul(z,z), ctx.mul(ctx.constant(k), ctx.sub(ctx.mul(w,w), ctx.mul(ctx.constant(2.0), ctx.mul(w, v))))))
+    z1 = ctx.mul(ctx.constant(k), v1)
+    psi = ctx.add(ctx.mul(z1,z1), ctx.mul(ctx.constant(k), ctx.sub(ctx.mul(w1,w1), ctx.mul(ctx.constant(2.0), ctx.mul(w1, v1)))))
+    a1 = ctx.add(z1, ctx.sqrt(psi))
+    a2 = ctx.sub(x2, y2)
 
-
-    f2 = ac.DifferentialEquation(ctx, T1, T2)
-    f2.set_ode(x, v)
-    f2.set_ode(v, u)
-    f2.set_ode(y, w)
-    f2.set_ode(w, ctx.add(w1, ctx.add(w2, w3)))
-
-    return ctx, [x, v, y, w], [u], [f1, j, f2]
+    return ctx, [[x1, v1, y1, w1],[x2, v2, y2, w2]], [[u1],[u2]], a1, [T1, T2], f1, ctx.add(ctx.mul(ctx.mul(u1,u1),T1),ctx.mul(ctx.mul(u2,u2),T2))

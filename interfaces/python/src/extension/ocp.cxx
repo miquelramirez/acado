@@ -1,4 +1,5 @@
 #include "ocp.hxx"
+#include <boost/python.hpp>
 
 namespace ACADO {
 
@@ -34,7 +35,6 @@ namespace ACADO {
         _cp->subjectTo(*de);
     }
 
-
     void
     PyOCP::add_initial_constraint(AtomRef atom) {
         _cp->subjectTo(AT_START, *_ctx->get_atom(atom));
@@ -54,6 +54,13 @@ namespace ACADO {
     }
 
     void
+    PyOCP::add_boundary_constraint(double lb, TermRef h1, TermRef h2, double ub) {
+        ExpressionPtr h1_expr = _ctx->get(h1);
+        ExpressionPtr h2_expr = _ctx->get(h2);
+        _cp->subjectTo( lb, *h1_expr, *h2_expr, ub);
+    }
+
+    void
     PyOCP::set_terminal_cost(TermRef expr) {
         _cp->minimizeMayerTerm(*_ctx->get(expr));
     }
@@ -70,12 +77,17 @@ void define_ocp() {
 
     bp::class_<PyOCP, PyOCP::ptr,
         boost::noncopyable>("OCP",
-            bp::init<PyContext::ptr, double, bp::object, int>())
+            bp::init<PyContext::ptr, double, bp::object, int>(
+                (bp::arg("ctx"),
+                bp::arg("tStart") = 0.0,
+                bp::arg("tEnd") = bp::object(1.0),
+                bp::arg("N") = 20)))
             .def("add_continuous_diff_constraints", &PyOCP::add_continuous_diff_constraints)
             .def("add_discrete_diff_constraints", &PyOCP::add_discrete_diff_constraints)
             .def("add_initial_constraint", &PyOCP::add_initial_constraint)
             .def("add_terminal_constraint", &PyOCP::add_terminal_constraint)
             .def("add_constraint", &PyOCP::add_constraint)
+            .def("add_boundary_constraint", &PyOCP::add_boundary_constraint)
             .def("set_terminal_cost", &PyOCP::set_terminal_cost)
             .def("set_stage_cost", &PyOCP::set_stage_cost)
         ;

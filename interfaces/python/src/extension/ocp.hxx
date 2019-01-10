@@ -3,6 +3,7 @@
 #include <acado/acado_optimal_control.hpp>
 #include "context.hxx"
 #include "differential_equation.hxx"
+#include "transition.hxx"
 
 extern void define_ocp();
 
@@ -30,6 +31,7 @@ namespace ACADO {
         void add_initial_constraint( AtomRef atom );
         void add_terminal_constraint( AtomRef atom );
         void add_constraint( AtomRef atom );
+        void add_boundary_constraint(double lb, TermRef h1, TermRef h2, double ub);
 
         void set_terminal_cost( TermRef expr );
         void set_stage_cost( TermRef expr);

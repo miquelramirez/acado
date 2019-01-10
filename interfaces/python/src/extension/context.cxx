@@ -333,6 +333,7 @@ namespace ACADO {
         AtomRef a = register_atom(p_atom);
         return a;
     }
+
 }
 
 void define_context() {

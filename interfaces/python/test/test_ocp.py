@@ -281,6 +281,70 @@ def test_ocp_discrete_time():
     assert solver.objective_value == 1.2084178048256953
 
 def test_hybrid_ocp():
-    ctx, X, U, trans = setup_jojo_model()
+    ctx, X, U, a1, timings, trans, stage_cost = setup_jojo_model()
+
+    ocp = ac.OCP(ctx, 0.0, 1.0, 20)
+    ocp.set_stage_cost(stage_cost)
+
+    ocp.add_continuous_diff_constraints(trans)
+
+    for xi in X[0]:
+        ocp.add_initial_constraint(ctx.equal(xi, 0.0))
+
+    ocp.add_terminal_constraint(ctx.equal(ctx.sub(X[0][0],X[0][2]), 1.0)) # L = 1.0
+    ocp.add_terminal_constraint(ctx.equal(X[1][0], -0.1))
+    ocp.add_terminal_constraint(ctx.equal(X[1][1], 0.0))
+    ocp.add_terminal_constraint(ctx.equal(ctx.sub(X[1][0],X[1][2]), 0.0))
+    ocp.add_terminal_constraint(ctx.equal(X[1][3], 0.0))
+
+
+    # jump constraints
+    ocp.add_boundary_constraint(0.0, X[1][0], ctx.mul(ctx.constant(-1.0), X[0][0]), 0.0)
+    ocp.add_boundary_constraint(0.0, X[1][1], ctx.mul(ctx.constant(-1.0), X[0][1]), 0.0)
+    ocp.add_boundary_constraint(0.0, X[1][2], ctx.mul(ctx.constant(-1.0), X[0][2]), 0.0)
+    ocp.add_boundary_constraint(0.0, X[1][3], ctx.mul(ctx.constant(-1.0), a1), 0.0)
+
+    ocp.add_constraint(ctx.bound(-10.0, U[0][0], 10.0))
+    ocp.add_constraint(ctx.bound(-10.0, U[1][0], 10.0))
+
+    ocp.add_constraint( ctx.bound(0.1, timings[0], 2.0))
+    ocp.add_constraint( ctx.bound(0.1, timings[1], 4.0))
+
+    solver = ac.OptimizationAlgorithm(ocp)
+    solver.integrator_type = ac.IntegratorType.INT_RK45
+    solver.discretization_type = ac.DiscretizationType.MULTIPLE_SHOOTING
+    solver.kkt_tolerance = 1e-10
+    solver.absolute_tolerance = 1e-4
+    solver.integrator_tolerance = 1e-8
+    solver.max_num_iterations = 1000
+    solver.solve()
+
+    # plot results
+    times = np.array(solver.t) * (solver.tf-solver.t0) + solver.t0
+    tau_X = np.hstack([np.array(x_k[:2*len(X[0])]).reshape(2*len(X[0]),1) for x_k in solver.Xd])
+    tau_J = np.hstack([np.array(x_k[2*len(X[0]):]).reshape(1,1) for x_k in solver.Xd])
+    tau_U = np.hstack([np.array(u_k).reshape(len(U),1) for u_k in solver.U])
+
+
+    fig, axes = plt.subplots(2,1)
+    axes[0].grid(True)
+    axes[0].set_xlabel('time')
+    for x_dim in range(tau_X.shape[0]):
+        # Plot a single line
+        ys = tau_X[x_dim,:]
+        axes[0].plot(times, ys, label='x_{}'.format(x_dim))
+    axes[0].legend()
+
+    axes[1].grid(True)
+    axes[1].set_xlabel('time')
+    for x_dim in range(tau_U.shape[0]):
+        # Plot a single line
+        ys = tau_U[x_dim,:]
+        axes[1].plot(times, ys, label='u_{}'.format(x_dim))
+    axes[1].legend()
+
+    plt.savefig('test_hybrid_ocp.trajectory.pdf')
+
+    assert solver.objective_value == 28.790760787152017
 
     assert False
