@@ -4,6 +4,8 @@ from tarski.syntax import *
 from tarski.syntax.arithmetic import *
 from tarski.syntax.arithmetic.special import *
 from tarski.syntax.arithmetic.random import *
+from tarski.model import Model
+from tarski.evaluators.simple import evaluate
 
 class TranslationError(Exception):
     pass
@@ -27,7 +29,7 @@ tarski_syms = {
     BuiltinFunctionSymbol.SQRT : ac.Context.sqrt
 }
 
-def translate(context: ac.Context, syms: dict, expr):
+def translate(context: ac.Context, syms: dict, expr, model = None):
 
     if isinstance(expr, Tautology):
         raise NoOutputGenerated()
@@ -49,6 +51,11 @@ def translate(context: ac.Context, syms: dict, expr):
         try:
             return syms[symref(expr)]
         except KeyError:
+            if model is not None:
+                try:
+                    return model[expr].symbol
+            except Undefined Element:
+                pass
             raise TranslationError("translate(): symbol '{}' has not been registered!".format(expr))
     elif isinstance(expr, Constant):
         try:
