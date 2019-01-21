@@ -346,5 +346,3 @@ def test_hybrid_ocp():
     plt.savefig('test_hybrid_ocp.trajectory.pdf')
 
     assert solver.objective_value == 28.790760787152017
-
-    assert False

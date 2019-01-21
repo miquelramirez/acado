@@ -8,6 +8,9 @@ from tarski.syntax.arithmetic.random import *
 class TranslationError(Exception):
     pass
 
+class NoOutputGenerated(Exception):
+    pass
+
 tarski_syms = {
     BuiltinFunctionSymbol.ADD : ac.Context.add,
     BuiltinFunctionSymbol.SUB : ac.Context.sub,
@@ -111,6 +114,8 @@ def translate(context: ac.Context, syms: dict, expr):
                 return context.lower_bound(lhs, rhs)
             print(expr.predicate.symbol, BuiltinPredicateSymbol.GE, expr.predicate.symbol == BuiltinPredicateSymbol.GE)
             raise TranslationError('translate(): cannot translate expression "{}" at least one of subterms "{}", "{}" needs to be compound'.format(expr, str(st[0], st[1])))
-
-
+        elif isinstance(expr, Tautology):
+            raise NoOutputGenerated()
+        elif isinstance(expr, Contradiction):
+            raise NoOutputGenerated()
     raise TranslationError("translate(): could not translate {}".format(expr))
