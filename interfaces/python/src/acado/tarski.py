@@ -53,7 +53,7 @@ def translate(context: ac.Context, syms: dict, expr, model = None):
         except KeyError:
             if model is not None:
                 try:
-                    return model[expr].symbol
+                    return ctx.constant(model[expr].symbol)
                 except UndefinedElement:
                     pass
             raise TranslationError("translate(): symbol '{}' has not been registered!".format(expr))
