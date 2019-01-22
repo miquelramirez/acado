@@ -30,7 +30,7 @@ tarski_syms = {
     BuiltinFunctionSymbol.SQRT : ac.Context.sqrt
 }
 
-def translate(context: ac.Context, syms: dict, expr, model = None):
+def translate(context: ac.Context, syms: dict, expr, model=None):
 
     if isinstance(expr, Tautology):
         raise NoOutputGenerated()
@@ -40,7 +40,7 @@ def translate(context: ac.Context, syms: dict, expr, model = None):
         return context.constant(expr)
     elif isinstance(expr, CompoundTerm):
         if expr.symbol.builtin:
-            trans_st = [translate(context, syms, st) for st in expr.subterms]
+            trans_st = [translate(context, syms, st, model) for st in expr.subterms]
             if len(trans_st) == 2:
                 try:
                     return tarski_syms[expr.symbol.symbol](context, trans_st[0], trans_st[1])
@@ -77,7 +77,7 @@ def translate(context: ac.Context, syms: dict, expr, model = None):
 
         if expr.predicate.symbol == BuiltinPredicateSymbol.EQ:
             if isinstance(expr.subterms[0], CompoundTerm):
-                lhs = translate(context, syms, expr.subterms[0])
+                lhs = translate(context, syms, expr.subterms[0], model)
                 if isinstance(expr.subterms[1], Constant):
                     rhs = expr.subterms[1].symbol
                 elif isinstance(expr.subterms[1], float):
@@ -88,7 +88,7 @@ def translate(context: ac.Context, syms: dict, expr, model = None):
             raise TranslationError('translate(): cannot translate a == b where a is not a term')
         elif expr.predicate.symbol == BuiltinPredicateSymbol.LE:
             if isinstance(expr.subterms[0], CompoundTerm):
-                lhs = translate(context, syms, expr.subterms[0])
+                lhs = translate(context, syms, expr.subterms[0], model)
                 if isinstance(expr.subterms[1], Constant):
                     rhs = expr.subterms[1].symbol
                 elif isinstance(expr.subterms[1], float):
@@ -97,7 +97,7 @@ def translate(context: ac.Context, syms: dict, expr, model = None):
                     raise TranslationError('translate(): cannot translate x <= a, where a is not constant')
                 return context.upper_bound(lhs, rhs)
             elif isinstance(expr.subterms[1], CompoundTerm):
-                rhs = translate(context, syms, expr.subterms[1])
+                rhs = translate(context, syms, expr.subterms[1], model)
                 if isinstance(expr.subterms[0], Constant):
                     lhs = expr.subterms[0].symbol
                 elif isinstance(expr.subterms[0], float):
@@ -109,7 +109,7 @@ def translate(context: ac.Context, syms: dict, expr, model = None):
         elif expr.predicate.symbol == BuiltinPredicateSymbol.GE:
             st = [ expr.subterms[1], expr.subterms[0]]
             if isinstance(st[0], CompoundTerm):
-                lhs = translate(context, syms, st[0])
+                lhs = translate(context, syms, st[0], model)
                 if isinstance(st[1], Constant):
                     rhs = st[1].symbol
                 elif isinstance(st[1], float):
@@ -118,7 +118,7 @@ def translate(context: ac.Context, syms: dict, expr, model = None):
                     raise TranslationError('translate(): cannot translate a >= x, where a is not constant')
                 return context.upper_bound(lhs, rhs)
             elif isinstance(st[1], CompoundTerm):
-                rhs = translate(context, syms, st[1])
+                rhs = translate(context, syms, st[1], model)
                 if isinstance(st[0], Constant):
                     lhs = st[0].symbol
                 elif isinstance(st[0], float):
