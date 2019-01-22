@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import acado as ac
 from tarski.syntax import *
+from tarski.errors import UndefinedTerm
 from tarski.syntax.arithmetic import *
 from tarski.syntax.arithmetic.special import *
 from tarski.syntax.arithmetic.random import *
@@ -35,6 +36,8 @@ def translate(context: ac.Context, syms: dict, expr, model = None):
         raise NoOutputGenerated()
     elif isinstance(expr, Contradiction):
         raise NoOutputGenerated()
+    elif isinstance(expr, float):
+        return context.constant(expr)
     elif isinstance(expr, CompoundTerm):
         if expr.symbol.builtin:
             trans_st = [translate(context, syms, st) for st in expr.subterms]
@@ -53,8 +56,8 @@ def translate(context: ac.Context, syms: dict, expr, model = None):
         except KeyError:
             if model is not None:
                 try:
-                    return ctx.constant(model[expr].symbol)
-                except UndefinedElement:
+                    return context.constant(model[expr].symbol)
+                except UndefinedTerm:
                     pass
             raise TranslationError("translate(): symbol '{}' has not been registered!".format(expr))
     elif isinstance(expr, Constant):
